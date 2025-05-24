@@ -1,7 +1,7 @@
 package com.example.myalarm.alarmtype;
 
 public class DateAlarm extends CustomTypeAlarm {
-    public final static String ALARM_TYPE = "D";
+    public final static String ALARM_TYPE = "DATE";
     private Integer year;
     private Integer month;
     private Integer day;
@@ -56,6 +56,11 @@ public class DateAlarm extends CustomTypeAlarm {
     }
 
     @Override
+    public String getType() {
+        return ALARM_TYPE;
+    }
+
+    @Override
     public String getRepeatDesc() {
         StringBuilder repeatDescBuilder = new StringBuilder();
         repeatDescBuilder.append(this.year == null ? "每年" : this.year + "年");
@@ -66,6 +71,11 @@ public class DateAlarm extends CustomTypeAlarm {
             repeatDescBuilder.append("每天");
         } else {
             repeatDescBuilder.append(this.day + "日");
+        }
+        if (Boolean.TRUE.equals(isWorkingDay())) {
+            repeatDescBuilder.append("（法定节假日不响铃）");
+        } else if (Boolean.TRUE.equals(isHoliday())) {
+            repeatDescBuilder.append("（法定工作日不响铃）");
         }
         return repeatDescBuilder.toString();
     }

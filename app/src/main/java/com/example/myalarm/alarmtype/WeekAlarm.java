@@ -1,10 +1,11 @@
 package com.example.myalarm.alarmtype;
 
 public class WeekAlarm extends CustomTypeAlarm {
-    public final static String ALARM_TYPE = "W";
+    public final static String ALARM_TYPE = "WEEK";
     private int[] weekDayCheck;
 
     public WeekAlarm(int[] weekDayCheck) {
+        super();
         this.weekDayCheck = weekDayCheck;
     }
 
@@ -14,6 +15,11 @@ public class WeekAlarm extends CustomTypeAlarm {
 
     public void setWeekDayCheck(int[] weekDayCheck) {
         this.weekDayCheck = weekDayCheck;
+    }
+
+    @Override
+    public String getType() {
+        return ALARM_TYPE;
     }
 
     @Override
@@ -39,6 +45,11 @@ public class WeekAlarm extends CustomTypeAlarm {
         }
         if (this.weekDayCheck[0] == 1) {
             repeatDescBuilder.append("周日 ");
+        }
+        if (Boolean.TRUE.equals(isWorkingDay())) {
+            repeatDescBuilder.append("（法定节假日不响铃）");
+        } else if (Boolean.TRUE.equals(isHoliday())) {
+            repeatDescBuilder.append("（法定工作日不响铃）");
         }
         return repeatDescBuilder.toString();
     }

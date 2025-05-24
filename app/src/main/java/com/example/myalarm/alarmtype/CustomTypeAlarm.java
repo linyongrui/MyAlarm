@@ -2,9 +2,8 @@ package com.example.myalarm.alarmtype;
 
 public abstract class CustomTypeAlarm {
     private String name;
-    private String type;
-
-    public abstract String getRepeatDesc();
+    private Boolean workingDay;
+    private Boolean holiday;
 
     public String getName() {
         return name;
@@ -14,11 +13,23 @@ public abstract class CustomTypeAlarm {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public Boolean isWorkingDay() {
+        return workingDay;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setWorkingDay(Boolean workingDay) {
+        this.workingDay = workingDay;
     }
+
+    public Boolean isHoliday() {
+        return holiday;
+    }
+
+    public void setHoliday(Boolean holiday) {
+        this.holiday = holiday;
+    }
+
+    public abstract String getType();
+
+    public abstract String getRepeatDesc();
 }
