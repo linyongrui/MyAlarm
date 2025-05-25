@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 顶部栏 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:title="新建闹钟"
+            app:titleTextColor="@android:color/white">
+
+            <ImageButton
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:contentDescription="取消"
+                android:background="@android:color/transparent"
+                android:layout_gravity="start" />
+
+            <TextView
+                android:id="@+id/btn_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="完成"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_gravity="end" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- 距离下次响铃时间 -->
+    <TextView
+        android:id="@+id/tv_time_until_next_ring"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="距离下次响铃还有 2 天"
+        android:textAlignment="center"
+        android:paddingBottom="16dp" />
+
+    <!-- 时间选择器 -->
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- 响铃规则选择 -->
+    <Spinner
+        android:id="@+id/spinner_ring_rule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp" />
+
+    <!-- 响铃重复日期选择 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:id="@+id/tv_ring_repeat_dates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="响铃重复日期" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_sunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="日"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btn_monday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="一"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btn_tuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="二"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btn_wednesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="三"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btn_thursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="四"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btn_friday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="五"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btn_saturday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="六"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 法定节假日不响铃开关 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="16dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_skip_holidays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="法定节假日不响铃" />
+
+        <Switch
+            android:id="@+id/switch_skip_holidays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end" />
+    </LinearLayout>
+
+    <!-- 其他设置项（闹钟名称、铃声、振动、稍后提醒） -->
+    <EditText
+        android:id="@+id/et_alarm_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="闹钟名称"
+        android:paddingTop="16dp" />
+
+    <TextView
+        android:id="@+id/tv_ringtone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="铃声：默认铃声"
+        android:paddingTop="16dp" />
+
+    <TextView
+        android:id="@+id/tv_vibration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="振动：默认振动"
+        android:paddingTop="16dp" />
+
+    <TextView
+        android:id="@+id/tv_snooze"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="稍后提醒：响铃间隔5分钟，响铃次数3次"
+        android:paddingTop="16dp" />
+</LinearLayout>

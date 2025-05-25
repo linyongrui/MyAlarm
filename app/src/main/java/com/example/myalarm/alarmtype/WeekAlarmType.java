@@ -1,10 +1,10 @@
 package com.example.myalarm.alarmtype;
 
-public class WeekAlarm extends CustomTypeAlarm {
+public class WeekAlarmType extends BaseAlarmType {
     public final static String ALARM_TYPE = "WEEK";
     private int[] weekDayCheck;
 
-    public WeekAlarm(int[] weekDayCheck) {
+    public WeekAlarmType(int[] weekDayCheck) {
         super();
         this.weekDayCheck = weekDayCheck;
     }

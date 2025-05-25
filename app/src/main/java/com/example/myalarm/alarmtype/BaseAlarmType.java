@@ -1,6 +1,6 @@
 package com.example.myalarm.alarmtype;
 
-public abstract class CustomTypeAlarm {
+public abstract class BaseAlarmType {
     private String name;
     private Boolean workingDay;
     private Boolean holiday;

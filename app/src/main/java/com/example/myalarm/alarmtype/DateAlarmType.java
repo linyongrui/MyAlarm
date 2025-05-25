@@ -1,13 +1,13 @@
 package com.example.myalarm.alarmtype;
 
-public class DateAlarm extends CustomTypeAlarm {
+public class DateAlarmType extends BaseAlarmType {
     public final static String ALARM_TYPE = "DATE";
     private Integer year;
     private Integer month;
     private Integer day;
     private boolean lastDay;
 
-    public DateAlarm(Integer year, Integer month, Integer day) {
+    public DateAlarmType(Integer year, Integer month, Integer day) {
         super();
         this.year = year;
         this.month = month;
@@ -15,7 +15,7 @@ public class DateAlarm extends CustomTypeAlarm {
         this.lastDay = false;
     }
 
-    public DateAlarm(Integer year, Integer month, Integer day, boolean lastDay) {
+    public DateAlarmType(Integer year, Integer month, Integer day, boolean lastDay) {
         super();
         this.year = year;
         this.month = month;

@@ -1,9 +1,9 @@
 package com.example.myalarm.alarmtype;
 
-public class HolidayAlarm extends CustomTypeAlarm {
+public class HolidayAlarmType extends BaseAlarmType {
     public final static String ALARM_TYPE = "HOLIDAY";
 
-    public HolidayAlarm() {
+    public HolidayAlarmType() {
         super();
         setHoliday(true);
         setWorkingDay(false);

@@ -1,9 +1,9 @@
 package com.example.myalarm.alarmtype;
 
-public class EveryDayAlarm extends CustomTypeAlarm {
+public class EveryDayAlarmType extends BaseAlarmType {
     public final static String ALARM_TYPE = "EVERY_DATE";
 
-    public EveryDayAlarm() {
+    public EveryDayAlarmType() {
         super();
     }
 

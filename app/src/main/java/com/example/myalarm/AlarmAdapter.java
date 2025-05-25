@@ -8,24 +8,35 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myalarm.dto.Alarm;
+import com.example.myalarm.entity.Alarm;
 
-import java.util.List;
 
-public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
-
-    private List<Alarm> alarmList;
-
-    public AlarmAdapter(List<Alarm> alarmList) {
-        this.alarmList = alarmList;
+public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolder> {
+    public AlarmAdapter() {
+        super(DIFF_CALLBACK);
     }
+
+    private static final DiffUtil.ItemCallback<Alarm> DIFF_CALLBACK = new DiffUtil.ItemCallback<Alarm>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
+            return oldItem.getTime().equals(newItem.getTime()) &&
+                    oldItem.getRepeatStr().equals(newItem.getRepeatStr()) &&
+                    oldItem.isEnabled() == newItem.isEnabled();
+        }
+    };
 
     @NonNull
     @Override
     public AlarmViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // 加载item_alarm.xml布局
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_alarm, parent, false);
         return new AlarmViewHolder(view);
@@ -33,7 +44,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     @Override
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
-        Alarm alarm = alarmList.get(position);
+        Alarm alarm = getItem(position);
         holder.timeTextView.setText(alarm.getTime());
         holder.repeatTextView.setText(alarm.getRepeatStr());
         holder.alarmSwitch.setChecked(alarm.isEnabled());
@@ -50,11 +61,6 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 android.widget.Toast.makeText(buttonView.getContext(), message, android.widget.Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return alarmList.size();
     }
 
     public static class AlarmViewHolder extends RecyclerView.ViewHolder {
