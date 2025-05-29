@@ -9,8 +9,10 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // 初始化数据库
         DatabaseClient.initialize(this);
-        // 其他初始化...
+//        List<AlarmEntity> activeAlarms = DatabaseClient.getInstance().getAlarmEntityDatabase().alarmDao().getAllActiveAlarms();
+//        for (AlarmEntity alarm : activeAlarms) {
+//            AlarmUtils.setAlarm(this, alarm);
+//        }
     }
 }

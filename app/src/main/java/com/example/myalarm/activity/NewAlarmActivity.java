@@ -1,6 +1,9 @@
-package com.example.myalarm;
+package com.example.myalarm.activity;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,18 +14,25 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.example.myalarm.R;
 import com.example.myalarm.alarmtype.WeekAlarmType;
 import com.example.myalarm.data.DatabaseClient;
-import com.example.myalarm.entity.Alarm;
+import com.example.myalarm.entity.AlarmEntity;
+import com.example.myalarm.util.AlarmUtils;
 
 import java.util.Calendar;
 
 public class NewAlarmActivity extends AppCompatActivity {
-
+    private static final int REQUEST_SCHEDULE_EXACT_ALARM = 1;
     private TimePicker timePicker;
     private Spinner ringRuleSpinner;
     private Button[] dayButtons;
@@ -35,11 +45,9 @@ public class NewAlarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_alarm);
 
-        // 初始化顶部栏
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // 初始化各控件
         timePicker = findViewById(R.id.timePicker);
         ringRuleSpinner = findViewById(R.id.spinner_ring_rule);
         dayButtons = new Button[]{
@@ -57,31 +65,25 @@ public class NewAlarmActivity extends AppCompatActivity {
         vibrationTextView = findViewById(R.id.tv_vibration);
         snoozeTextView = findViewById(R.id.tv_snooze);
 
-        // 设置响铃规则下拉框选项
         String[] ringRuleOptions = {"响一次", "法定节假日"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ringRuleOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ringRuleSpinner.setAdapter(adapter);
 
-        // 时间选择器监听器
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                // 这里可处理时间选择后的逻辑
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 calendar.set(Calendar.MINUTE, minute);
-                // 示例：更新距离下次响铃时间文本
                 updateTimeUntilNextRing(calendar);
             }
         });
 
-        // 响铃规则下拉框选择监听器
         ringRuleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedRule = (String) parent.getItemAtPosition(position);
-                // 这里可处理响铃规则选择后的逻辑
             }
 
             @Override
@@ -89,13 +91,11 @@ public class NewAlarmActivity extends AppCompatActivity {
             }
         });
 
-        // 日期按钮点击监听器
         for (Button dayButton : dayButtons) {
             dayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Button button = (Button) v;
-                    // 这里可处理日期选择后的逻辑，如改变按钮背景表示选中状态
                     if (isButtonSelected(button)) {
                         unselectButton(button);
                     } else {
@@ -105,15 +105,12 @@ public class NewAlarmActivity extends AppCompatActivity {
             });
         }
 
-        // 法定节假日不响铃开关监听器
         skipHolidaysSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // 这里可处理开关状态改变后的逻辑
             }
         });
 
-        // 顶部栏取消按钮点击事件
         findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,11 +118,9 @@ public class NewAlarmActivity extends AppCompatActivity {
             }
         });
 
-        // 顶部栏完成按钮点击事件
         findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 这里可处理完成新建闹钟的逻辑，如保存闹钟设置到数据库等
                 saveAlarmSettings();
 //                Intent intent = new Intent(NewAlarmActivity.this, MainActivity.class);
 //                startActivity(intent);
@@ -134,7 +129,6 @@ public class NewAlarmActivity extends AppCompatActivity {
     }
 
     private boolean isButtonSelected(Button button) {
-        // 可根据按钮背景色或其他标识判断是否选中，这里简单示例
         return button.getTextColors().getDefaultColor() == getResources().getColor(android.R.color.white);
     }
 
@@ -149,20 +143,17 @@ public class NewAlarmActivity extends AppCompatActivity {
     }
 
     private void updateTimeUntilNextRing(Calendar calendar) {
-        // 这里简单示例更新距离下次响铃时间文本，实际需根据业务逻辑准确计算
         TextView timeUntilNextRingTextView = findViewById(R.id.tv_time_until_next_ring);
         timeUntilNextRingTextView.setText("距离下次响铃还有 " + getTimeDiff(calendar) + " 天");
     }
 
     private int getTimeDiff(Calendar calendar) {
-        // 示例：计算与当前时间的天数差值，实际需更准确逻辑
         Calendar now = Calendar.getInstance();
         long diffInMillis = calendar.getTimeInMillis() - now.getTimeInMillis();
         return (int) (diffInMillis / (24 * 60 * 60 * 1000));
     }
 
     private void saveAlarmSettings() {
-        // 这里需实现保存闹钟设置到数据库或其他存储方式的逻辑
         int hour = timePicker.getCurrentHour();
         int minute = timePicker.getCurrentMinute();
         String ringRule = (String) ringRuleSpinner.getSelectedItem();
@@ -175,14 +166,13 @@ public class NewAlarmActivity extends AppCompatActivity {
         boolean skipHolidays = skipHolidaysSwitch.isChecked();
         String alarmName = alarmNameEditText.getText().toString();
 
-        // 示例打印设置信息，实际应保存到合适位置
         System.out.println("设置的闹钟时间：" + hour + ":" + minute);
         System.out.println("响铃规则：" + ringRule);
         System.out.println("选择的日期：" + selectedDays.toString());
         System.out.println("法定节假日不响铃：" + skipHolidays);
         System.out.println("闹钟名称：" + alarmName);
 
-        Alarm newAlarm = new Alarm(new WeekAlarmType(new int[]{1, 1, 1, 1, 1, 1, 0}), hour + ":" + minute, true);
+        AlarmEntity newAlarmEntity = new AlarmEntity(new WeekAlarmType(new int[]{1, 1, 1, 1, 1, 1, 0}), hour + ":" + minute, true);
 
 //        alarmList.add(new Alarm(new WeekAlarm(new int[]{1, 1, 1, 1, 1, 1, 0}), "07:20", true));
 //        alarmList.add(new Alarm("07:24", true));
@@ -201,18 +191,46 @@ public class NewAlarmActivity extends AppCompatActivity {
 //        alarmList.add(new Alarm(new HolidayAlarm(), "07:50", false));
 //        alarmList.add(new Alarm(new WorkingDayAlarm(), "07:51", true));
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestScheduleExactAlarmPermission();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                DatabaseClient.getInstance()
-//                DatabaseClient.getInstance(getApplicationContext())
-                        .getAppDatabase()
+                long id = DatabaseClient.getInstance()
+                        .getAlarmEntityDatabase()
                         .alarmDao()
-                        .insertAlarm(newAlarm);
-
-                // 保存成功后关闭Activity
+                        .insertAlarmEntity(newAlarmEntity);
+                Log.i("terry", "insertAlarmEntity:" + id);
+                newAlarmEntity.setId(id);
+                AlarmUtils.setAlarm(getApplicationContext(), newAlarmEntity);
                 finish();
             }
         }).start();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    private void requestScheduleExactAlarmPermission() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                android.Manifest.permission.SCHEDULE_EXACT_ALARM)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.SCHEDULE_EXACT_ALARM},
+                    REQUEST_SCHEDULE_EXACT_ALARM);
+        } else {
+            Toast.makeText(this, "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_SCHEDULE_EXACT_ALARM) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "权限被拒绝，无法设置精确闹钟", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

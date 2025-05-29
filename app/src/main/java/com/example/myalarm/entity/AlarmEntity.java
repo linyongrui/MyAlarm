@@ -7,34 +7,34 @@ import androidx.room.PrimaryKey;
 import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.alarmtype.EveryDayAlarmType;
 
-@Entity(tableName = "alarms")
-public class Alarm {
+@Entity(tableName = "alarmEntity")
+public class AlarmEntity {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
     private String name;
     private BaseAlarmType baseAlarmType;
     private String time;
     private boolean enabled;
 
     @Ignore
-    public Alarm(String time, boolean enabled) {
+    public AlarmEntity(String time, boolean enabled) {
         this.baseAlarmType = new EveryDayAlarmType();
         this.time = time;
         this.enabled = enabled;
     }
 
-    public Alarm(BaseAlarmType baseAlarmType, String time, boolean enabled) {
+    public AlarmEntity(BaseAlarmType baseAlarmType, String time, boolean enabled) {
         this.baseAlarmType = baseAlarmType;
         this.time = time;
         this.enabled = enabled;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

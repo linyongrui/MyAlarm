@@ -1,4 +1,4 @@
-package com.example.myalarm;
+package com.example.myalarm.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myalarm.entity.Alarm;
+import com.example.myalarm.AlarmAdapter;
+import com.example.myalarm.R;
+import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.viewmodel.AlarmViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -25,24 +27,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 初始化RecyclerView
         RecyclerView alarmRecyclerView = findViewById(R.id.alarmRecyclerView);
         alarmRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         alarmAdapter = new AlarmAdapter();
         alarmRecyclerView.setAdapter(alarmAdapter);
 
-        // 获取ViewModel
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
 
-        // 观察LiveData，自动刷新列表
-        alarmViewModel.getAlarmList().observe(this, new Observer<List<Alarm>>() {
+        alarmViewModel.getAlarmList().observe(this, new Observer<List<AlarmEntity>>() {
             @Override
-            public void onChanged(List<Alarm> alarms) {
-                alarmAdapter.submitList(alarms);
+            public void onChanged(List<AlarmEntity> alarmEntities) {
+                alarmAdapter.submitList(alarmEntities);
             }
         });
 
-        // 添加闹钟按钮
         FloatingActionButton addAlarmButton = findViewById(R.id.addAlarmButton);
         addAlarmButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -7,11 +7,11 @@ import androidx.room.TypeConverters;
 
 import com.example.myalarm.dao.AlarmDao;
 import com.example.myalarm.data.converter.AlarmTypeConverter;
-import com.example.myalarm.entity.Alarm;
+import com.example.myalarm.entity.AlarmEntity;
 
 
-@Database(entities = {Alarm.class}, version = 1, exportSchema = false)
+@Database(entities = {AlarmEntity.class}, version = 3, exportSchema = false)
 @TypeConverters({AlarmTypeConverter.class})
-public abstract class AppDatabase extends RoomDatabase {
+public abstract class AlarmEntityDatabase extends RoomDatabase {
     public abstract AlarmDao alarmDao();
 }

@@ -12,22 +12,22 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myalarm.entity.Alarm;
+import com.example.myalarm.entity.AlarmEntity;
 
 
-public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolder> {
+public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder> {
     public AlarmAdapter() {
         super(DIFF_CALLBACK);
     }
 
-    private static final DiffUtil.ItemCallback<Alarm> DIFF_CALLBACK = new DiffUtil.ItemCallback<Alarm>() {
+    private static final DiffUtil.ItemCallback<AlarmEntity> DIFF_CALLBACK = new DiffUtil.ItemCallback<AlarmEntity>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
+        public boolean areItemsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
             return oldItem.getId() == newItem.getId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
+        public boolean areContentsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
             return oldItem.getTime().equals(newItem.getTime()) &&
                     oldItem.getRepeatStr().equals(newItem.getRepeatStr()) &&
                     oldItem.isEnabled() == newItem.isEnabled();
@@ -44,20 +44,17 @@ public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
-        Alarm alarm = getItem(position);
-        holder.timeTextView.setText(alarm.getTime());
-        holder.repeatTextView.setText(alarm.getRepeatStr());
-        holder.alarmSwitch.setChecked(alarm.isEnabled());
+        AlarmEntity alarmEntity = getItem(position);
+        holder.timeTextView.setText(alarmEntity.getTime());
+        holder.repeatTextView.setText(alarmEntity.getRepeatStr());
+        holder.alarmSwitch.setChecked(alarmEntity.isEnabled());
 
-        // 设置开关状态变化监听器
         holder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // 更新闹钟状态
-                alarm.setEnabled(isChecked);
-                // 可以在这里添加闹钟启用/禁用的逻辑
+                alarmEntity.setEnabled(isChecked);
                 String status = isChecked ? "启用" : "禁用";
-                String message = "闹钟 " + alarm.getTime() + " 已" + status;
+                String message = "闹钟 " + alarmEntity.getTime() + " 已" + status;
                 android.widget.Toast.makeText(buttonView.getContext(), message, android.widget.Toast.LENGTH_SHORT).show();
             }
         });

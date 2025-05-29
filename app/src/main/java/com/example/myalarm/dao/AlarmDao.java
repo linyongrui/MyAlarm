@@ -7,21 +7,24 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.myalarm.entity.Alarm;
+import com.example.myalarm.entity.AlarmEntity;
 
 import java.util.List;
 
 @Dao
 public interface AlarmDao {
-    @Query("SELECT * FROM alarms ORDER BY time ASC")
-    LiveData<List<Alarm>> getAllAlarms();
+    @Query("SELECT * FROM AlarmEntity ORDER BY time ASC")
+    LiveData<List<AlarmEntity>> getAllAlarms();
+
+    @Query("SELECT * FROM AlarmEntity ORDER BY time ASC")
+    List<AlarmEntity> getAllActiveAlarms();
 
     @Insert
-    void insertAlarm(Alarm alarm);
+    long insertAlarmEntity(AlarmEntity alarmEntity);
 
     @Update
-    void updateAlarm(Alarm alarm);
+    void updateAlarmEntity(AlarmEntity alarmEntity);
 
     @Delete
-    void deleteAlarm(Alarm alarm);
+    void deleteAlarmEntity(AlarmEntity alarmEntity);
 }

@@ -17,23 +17,20 @@ import java.lang.reflect.Type;
 public class AlarmTypeConverter {
     private static final Gson gson = new Gson();
 
-    // 将CustomTypeAlarm对象转换为JSON字符串
     @TypeConverter
     public static String alarmToString(BaseAlarmType alarm) {
         if (alarm == null) return null;
         return gson.toJson(new AlarmWrapper(alarm.getType(), alarm));
     }
 
-    // 将JSON字符串转换回CustomTypeAlarm对象
     @TypeConverter
     public static BaseAlarmType stringToAlarm(String json) {
         if (json == null) return null;
 
-        // 先反序列化为包装类
-        Type wrapperType = new TypeToken<AlarmWrapper>() {}.getType();
+        Type wrapperType = new TypeToken<AlarmWrapper>() {
+        }.getType();
         AlarmWrapper wrapper = gson.fromJson(json, wrapperType);
 
-        // 根据类型标识创建具体子类
         switch (wrapper.type) {
             case DateAlarmType.ALARM_TYPE:
                 return gson.fromJson(gson.toJson(wrapper.alarm), DateAlarmType.class);
@@ -52,7 +49,6 @@ public class AlarmTypeConverter {
         }
     }
 
-    // 内部类：用于包装类型信息和对象
     private static class AlarmWrapper {
         String type;
         Object alarm;
