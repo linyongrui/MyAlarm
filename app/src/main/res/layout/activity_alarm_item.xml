@@ -50,6 +50,7 @@
             android:layout_centerVertical="true"
             android:checked="false"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp" />
+            android:paddingEnd="16dp"
+            android:theme="@style/CustomSwitchStyle"/>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
