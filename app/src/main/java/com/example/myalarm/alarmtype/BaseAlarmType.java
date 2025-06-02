@@ -2,8 +2,8 @@ package com.example.myalarm.alarmtype;
 
 public abstract class BaseAlarmType {
     private String name;
-    private Boolean workingDay;
-    private Boolean holiday;
+    private Boolean isSkipWorkingDay;
+    private Boolean isSkipHoliday;
 
     public String getName() {
         return name;
@@ -13,20 +13,20 @@ public abstract class BaseAlarmType {
         this.name = name;
     }
 
-    public Boolean isWorkingDay() {
-        return workingDay;
+    public Boolean getSkipWorkingDay() {
+        return isSkipWorkingDay;
     }
 
-    public void setWorkingDay(Boolean workingDay) {
-        this.workingDay = workingDay;
+    public void setSkipWorkingDay(Boolean skipWorkingDay) {
+        isSkipWorkingDay = skipWorkingDay;
     }
 
-    public Boolean isHoliday() {
-        return holiday;
+    public Boolean getSkipHoliday() {
+        return isSkipHoliday;
     }
 
-    public void setHoliday(Boolean holiday) {
-        this.holiday = holiday;
+    public void setSkipHoliday(Boolean skipHoliday) {
+        isSkipHoliday = skipHoliday;
     }
 
     public abstract String getType();

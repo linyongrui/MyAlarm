@@ -72,9 +72,9 @@ public class DateAlarmType extends BaseAlarmType {
         } else {
             repeatDescBuilder.append(this.day + "日");
         }
-        if (Boolean.TRUE.equals(isWorkingDay())) {
+        if (Boolean.TRUE.equals(getSkipHoliday())) {
             repeatDescBuilder.append("（法定节假日不响铃）");
-        } else if (Boolean.TRUE.equals(isHoliday())) {
+        } else if (Boolean.TRUE.equals(getSkipWorkingDay())) {
             repeatDescBuilder.append("（法定工作日不响铃）");
         }
         return repeatDescBuilder.toString();

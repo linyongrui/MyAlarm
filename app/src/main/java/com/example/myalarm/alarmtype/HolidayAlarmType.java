@@ -5,8 +5,8 @@ public class HolidayAlarmType extends BaseAlarmType {
 
     public HolidayAlarmType() {
         super();
-        setHoliday(true);
-        setWorkingDay(false);
+        setSkipWorkingDay(true);
+        setSkipHoliday(false);
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.annotation.RequiresPermission;
 
@@ -17,7 +16,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("terry", "AlarmReceiver.onReceive");
 
         try {
             // 构建通知
@@ -56,7 +54,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.i("terry", "AlarmReceiver.onReceive end");
     }
 
     private PendingIntent getContentIntent(Context context, Intent intent) {

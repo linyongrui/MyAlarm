@@ -46,9 +46,9 @@ public class WeekAlarmType extends BaseAlarmType {
         if (this.weekDayCheck[0] == 1) {
             repeatDescBuilder.append("周日 ");
         }
-        if (Boolean.TRUE.equals(isWorkingDay())) {
+        if (Boolean.TRUE.equals(getSkipHoliday())) {
             repeatDescBuilder.append("（法定节假日不响铃）");
-        } else if (Boolean.TRUE.equals(isHoliday())) {
+        } else if (Boolean.TRUE.equals(getSkipWorkingDay())) {
             repeatDescBuilder.append("（法定工作日不响铃）");
         }
         return repeatDescBuilder.toString();

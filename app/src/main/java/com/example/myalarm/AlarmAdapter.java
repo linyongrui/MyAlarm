@@ -45,7 +45,8 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
     @Override
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
         AlarmEntity alarmEntity = getItem(position);
-        holder.timeTextView.setText(alarmEntity.getTime());
+        String timeStr = alarmEntity.getTime().toString();
+        holder.timeTextView.setText(timeStr);
         holder.repeatTextView.setText(alarmEntity.getRepeatStr());
         holder.alarmSwitch.setChecked(alarmEntity.isEnabled());
 
@@ -54,7 +55,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 alarmEntity.setEnabled(isChecked);
                 String status = isChecked ? "启用" : "禁用";
-                String message = "闹钟 " + alarmEntity.getTime() + " 已" + status;
+                String message = "闹钟 " + timeStr + " 已" + status;
                 android.widget.Toast.makeText(buttonView.getContext(), message, android.widget.Toast.LENGTH_SHORT).show();
             }
         });

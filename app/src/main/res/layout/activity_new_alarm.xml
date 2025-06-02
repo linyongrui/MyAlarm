@@ -42,7 +42,6 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <!-- 距离下次响铃时间 -->
     <TextView
         android:id="@+id/tv_time_until_next_ring"
         android:layout_width="match_parent"
@@ -53,14 +52,11 @@
         android:textAlignment="center"
         android:textSize="15sp" />
 
-    <!-- 时间选择器 -->
     <TimePicker
         android:id="@+id/timePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:timePickerMode="spinner" />
-
-    <!-- 响铃规则选择 -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -97,8 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:paddingTop="10dp">
 
         <ToggleButton
             android:id="@+id/btn_sunday"
@@ -172,13 +167,12 @@
             android:textOn="六" />
     </LinearLayout>
 
-    <!-- 法定节假日不响铃开关 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="16dp">
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/tv_skip_workingDay"
@@ -191,7 +185,6 @@
             android:id="@+id/switch_skip_workingDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
             android:theme="@style/CustomSwitchStyle" />
 
         <TextView
@@ -205,11 +198,9 @@
             android:id="@+id/switch_skip_holidays"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
             android:theme="@style/CustomSwitchStyle" />
     </LinearLayout>
 
-    <!-- 其他设置项（闹钟名称、铃声、振动、稍后提醒） -->
     <EditText
         android:id="@+id/et_alarm_name"
         android:layout_width="match_parent"

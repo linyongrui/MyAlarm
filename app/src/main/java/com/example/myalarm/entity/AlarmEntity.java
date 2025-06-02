@@ -1,11 +1,12 @@
 package com.example.myalarm.entity;
 
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.example.myalarm.alarmtype.BaseAlarmType;
-import com.example.myalarm.alarmtype.EveryDayAlarmType;
+
+import java.time.LocalTime;
+import java.util.Objects;
 
 @Entity(tableName = "alarmEntity")
 public class AlarmEntity {
@@ -14,20 +15,14 @@ public class AlarmEntity {
     private long id;
     private String name;
     private BaseAlarmType baseAlarmType;
-    private String time;
+    private LocalTime time;
     private boolean enabled;
 
-    @Ignore
-    public AlarmEntity(String time, boolean enabled) {
-        this.baseAlarmType = new EveryDayAlarmType();
-        this.time = time;
-        this.enabled = enabled;
-    }
-
-    public AlarmEntity(BaseAlarmType baseAlarmType, String time, boolean enabled) {
+    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time) {
+        this.name = name;
         this.baseAlarmType = baseAlarmType;
         this.time = time;
-        this.enabled = enabled;
+        this.enabled = true;
     }
 
     public long getId() {
@@ -54,11 +49,11 @@ public class AlarmEntity {
         this.baseAlarmType = baseAlarmType;
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 
@@ -72,5 +67,17 @@ public class AlarmEntity {
 
     public String getRepeatStr() {
         return this.baseAlarmType.getRepeatDesc();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        AlarmEntity that = (AlarmEntity) o;
+        return id == that.id && enabled == that.enabled && Objects.equals(name, that.name) && Objects.equals(baseAlarmType, that.baseAlarmType) && Objects.equals(time, that.time);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, baseAlarmType, time, enabled);
     }
 }

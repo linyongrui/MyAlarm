@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.myalarm.R;
+import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.alarmtype.DateAlarmType;
 import com.example.myalarm.alarmtype.EveryDayAlarmType;
 import com.example.myalarm.alarmtype.HolidayAlarmType;
@@ -37,6 +36,7 @@ import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -58,6 +58,7 @@ public class NewAlarmActivity extends AppCompatActivity {
     private TimePicker timePicker;
     private Spinner ringRuleSpinner;
     private ToggleButton[] dayButtons;
+    private Switch skipWorkingDaysSwitch;
     private Switch skipHolidaysSwitch;
     private EditText alarmNameEditText;
     private TextView ringtoneTextView, vibrationTextView, snoozeTextView;
@@ -79,9 +80,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAlarmSettings();
-//                Intent intent = new Intent(NewAlarmActivity.this, MainActivity.class);
-//                startActivity(intent);
+                saveAlarm();
             }
         });
 
@@ -145,6 +144,13 @@ public class NewAlarmActivity extends AppCompatActivity {
             }
         });
 
+        skipWorkingDaysSwitch = findViewById(R.id.switch_skip_workingDay);
+        skipWorkingDaysSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            }
+        });
+
         alarmNameEditText = findViewById(R.id.et_alarm_name);
         ringtoneTextView = findViewById(R.id.tv_ringtone);
         vibrationTextView = findViewById(R.id.tv_vibration);
@@ -155,11 +161,6 @@ public class NewAlarmActivity extends AppCompatActivity {
         toggleButton.setTextColor(
                 isSelected ? ContextCompat.getColorStateList(context, R.color.white) : ContextCompat.getColorStateList(context, R.color.black)
         );
-    }
-
-    private boolean isButtonSelected(Button button) {
-//        return button.getTextColors().getDefaultColor() == getResources().getColor(android.R.color.white);
-        return false;
     }
 
     private void updateTimeUntilNextRing(Calendar calendar) {
@@ -173,43 +174,50 @@ public class NewAlarmActivity extends AppCompatActivity {
         return (int) (diffInMillis / (24 * 60 * 60 * 1000));
     }
 
-    private void saveAlarmSettings() {
+    private void saveAlarm() {
         int hour = timePicker.getHour();
         int minute = timePicker.getMinute();
+        LocalTime time = LocalTime.of(hour, minute);
+
         String ringRule = ((SpinnerOption) ringRuleSpinner.getSelectedItem()).getOptionId();
-        StringBuilder selectedDays = new StringBuilder();
-        for (Button dayButton : dayButtons) {
-            if (isButtonSelected(dayButton)) {
-                selectedDays.append(dayButton.getText()).append(" ");
-            }
+        BaseAlarmType baseAlarmType;
+        switch (ringRule) {
+            case DateAlarmType.ALARM_TYPE:
+                baseAlarmType = new DateAlarmType(null, null, null);
+                break;
+            case EveryDayAlarmType.ALARM_TYPE:
+                baseAlarmType = new EveryDayAlarmType();
+                break;
+            case HolidayAlarmType.ALARM_TYPE:
+                baseAlarmType = new HolidayAlarmType();
+                break;
+            case OnceAlarmType.ALARM_TYPE:
+                baseAlarmType = new OnceAlarmType();
+                break;
+            case WeekAlarmType.ALARM_TYPE:
+                int[] weekCheck = new int[7];
+                for (int i = 0; i < 7; i++) {
+                    weekCheck[i] = dayButtons[i].isChecked() ? 1 : 0;
+                }
+                baseAlarmType = new WeekAlarmType(weekCheck);
+                break;
+            case WorkingDayAlarmType.ALARM_TYPE:
+                baseAlarmType = new WorkingDayAlarmType();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown alarm type: " + ringRule);
         }
-        boolean skipHolidays = skipHolidaysSwitch.isChecked();
+        baseAlarmType.setSkipWorkingDay(skipWorkingDaysSwitch.isChecked());
+        baseAlarmType.setSkipHoliday(skipHolidaysSwitch.isChecked());
         String alarmName = alarmNameEditText.getText().toString();
+        AlarmEntity newAlarmEntity = new AlarmEntity(alarmName, baseAlarmType, time);
 
         System.out.println("设置的闹钟时间：" + hour + ":" + minute);
         System.out.println("响铃规则：" + ringRule);
-        System.out.println("选择的日期：" + selectedDays.toString());
-        System.out.println("法定节假日不响铃：" + skipHolidays);
+//        System.out.println("选择的日期：" + weekCheck.toString());
+        System.out.println("法定工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
+        System.out.println("法定节假日不响铃：" + skipHolidaysSwitch.isChecked());
         System.out.println("闹钟名称：" + alarmName);
-
-        AlarmEntity newAlarmEntity = new AlarmEntity(new WeekAlarmType(new int[]{1, 1, 1, 1, 1, 1, 0}), hour + ":" + minute, true);
-
-//        alarmList.add(new Alarm(new WeekAlarm(new int[]{1, 1, 1, 1, 1, 1, 0}), "07:20", true));
-//        alarmList.add(new Alarm("07:24", true));
-//        alarmList.add(new Alarm(new EveryDayAlarm(), "07:30", true));
-//        alarmList.add(new Alarm(new DateAlarm(2025, 5, 23), "07:40", true));
-//        alarmList.add(new Alarm(new DateAlarm(2025, 5, 23, true), "07:41", true));
-//
-//        CustomTypeAlarm customTypeAlarm = new DateAlarm(2025, null, 23);
-//        customTypeAlarm.setWorkingDay(true);
-//        alarmList.add(new Alarm(customTypeAlarm, "07:42", true));
-//
-//        CustomTypeAlarm customTypeAlarm1 = new DateAlarm(2025, 5, null);
-//        customTypeAlarm1.setHoliday(true);
-//        alarmList.add(new Alarm(customTypeAlarm1, "07:43", true));
-//
-//        alarmList.add(new Alarm(new HolidayAlarm(), "07:50", false));
-//        alarmList.add(new Alarm(new WorkingDayAlarm(), "07:51", true));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestScheduleExactAlarmPermission();
@@ -221,7 +229,6 @@ public class NewAlarmActivity extends AppCompatActivity {
                         .getAlarmEntityDatabase()
                         .alarmDao()
                         .insertAlarmEntity(newAlarmEntity);
-                Log.i("terry", "insertAlarmEntity:" + id);
                 newAlarmEntity.setId(id);
                 AlarmUtils.setAlarm(getApplicationContext(), newAlarmEntity);
                 finish();
