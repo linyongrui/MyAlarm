@@ -6,7 +6,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
+import com.example.myalarm.activity.MainActivity;
 import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.alarmtype.DateAlarmType;
 import com.example.myalarm.alarmtype.EveryDayAlarmType;
@@ -31,7 +33,8 @@ public class AlarmUtils {
         LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
         boolean isBeforeNow = !alarmEntity.getTime().isAfter(timeNow);
 
-        List<HolidayEntity> holidayEntities = HolidayUtils.getHolidays();
+        List<HolidayEntity> holidayEntities = MainActivity.holidayEntities;
+        Log.i("terry", "holidayEntities.size()："+holidayEntities.size());
 
         LocalDate nextTriggerDate = null;
         BaseAlarmType baseAlarmType = alarmEntity.getBaseAlarmType();
@@ -99,7 +102,7 @@ public class AlarmUtils {
             throw new IllegalArgumentException("Unknown NextTriggerDate");
         }
         LocalDateTime nextTriggerTime = LocalDateTime.of(nextTriggerDate, alarmEntity.getTime());
-        System.out.println("nextTriggerTime:" + nextTriggerTime);
+        Log.i("terry", "nextTriggerTime:" + nextTriggerTime);
         return nextTriggerTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
