@@ -7,9 +7,13 @@ import androidx.room.Room;
 public class DatabaseClient {
     private static DatabaseClient instance;
     private final AlarmEntityDatabase alarmEntityDatabase;
+    private final HolidayEntityDatabase holidayEntityDatabase;
 
     private DatabaseClient(Context context) {
         alarmEntityDatabase = Room.databaseBuilder(context.getApplicationContext(), AlarmEntityDatabase.class, "alarm-database")
+                .fallbackToDestructiveMigration()
+                .build();
+        holidayEntityDatabase = Room.databaseBuilder(context.getApplicationContext(), HolidayEntityDatabase.class, "holiday-database")
                 .fallbackToDestructiveMigration()
                 .build();
     }
@@ -29,5 +33,9 @@ public class DatabaseClient {
 
     public AlarmEntityDatabase getAlarmEntityDatabase() {
         return alarmEntityDatabase;
+    }
+
+    public HolidayEntityDatabase getHolidayEntityDatabase() {
+        return holidayEntityDatabase;
     }
 }

@@ -23,6 +23,9 @@ public class AlarmEntity {
         this.baseAlarmType = baseAlarmType;
         this.time = time;
         this.enabled = true;
+        if(this.time != null) {
+            this.time.withSecond(0).withNano(0);
+        }
     }
 
     public long getId() {
@@ -55,6 +58,10 @@ public class AlarmEntity {
 
     public void setTime(LocalTime time) {
         this.time = time;
+
+        if(this.time != null) {
+            this.time.withSecond(0).withNano(0);
+        }
     }
 
     public boolean isEnabled() {

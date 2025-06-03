@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     tools:context=".activity.MainActivity">
-    <!-- 顶部导航栏 -->
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,6 @@
             app:titleTextColor="@android:color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 闹钟列表区域 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmRecyclerView"
         android:layout_width="match_parent"
@@ -39,16 +38,16 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <!-- 添加闹钟浮动按钮 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addAlarmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="bottom|center"
         android:layout_margin="16dp"
         android:contentDescription="添加闹钟"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="?attr/colorAccent"
+        app:rippleColor="@color/blue"
         app:elevation="6dp"
         app:fabSize="normal" />
 

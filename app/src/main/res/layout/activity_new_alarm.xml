@@ -81,14 +81,23 @@
 
 
     <TextView
-        android:id="@+id/tv_ring_repeat_dates"
+        android:id="@+id/tv_ring_repeat_dates_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
         android:text="响铃重复日期"
         android:textSize="15sp" />
 
+    <TextView
+        android:id="@+id/tv_ring_repeat_dates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:paddingTop="6dp"
+        android:textSize="15sp" />
+
     <LinearLayout
+        android:id="@+id/ll_days_of_week"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -168,6 +177,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_skip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
