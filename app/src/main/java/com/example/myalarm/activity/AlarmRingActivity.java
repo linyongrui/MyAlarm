@@ -4,22 +4,19 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.example.myalarm.R;
+import com.example.myalarm.service.RingtoneService;
 
 public class AlarmRingActivity extends AppCompatActivity {
 
-    private MediaPlayer mediaPlayer;
     private static final String CHANNEL_ID = "alarm_channel";
     private static final int NOTIFICATION_ID = 1;
 
@@ -29,32 +26,6 @@ public class AlarmRingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ring);
         Context context = getApplicationContext();
 
-        // 使用系统默认提示音
-        Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        mediaPlayer = new MediaPlayer();
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .build());
-            } else {
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-            }
-            mediaPlayer.setDataSource(context, defaultUri);
-            mediaPlayer.setLooping(true);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-//        mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound);
-//        mediaPlayer.setLooping(true);
-//        mediaPlayer.start();
-
-        // 显示通知
         createNotificationChannel();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -64,15 +35,16 @@ public class AlarmRingActivity extends AppCompatActivity {
         Notification notification = builder.build();
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, notification);
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
+        Button stopButton = findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent serviceIntent = new Intent(getApplicationContext(), RingtoneService.class);
+                stopService(serviceIntent);
+                finish();
+            }
+        });
     }
 
     private void createNotificationChannel() {

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -18,12 +19,15 @@
         android:theme="@style/Theme.MyAlarm"
         tools:targetApi="31">
         <receiver android:name=".receiver.AlarmReceiver" />
-        <receiver android:name=".receiver.BootReceiver"
+        <receiver
+            android:name=".receiver.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".service.RingtoneService" />
 
         <activity
             android:name=".activity.MainActivity"
@@ -34,9 +38,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- 其他组件配置 -->
-        <activity android:name=".activity.NewAlarmActivity" android:exported="false"/>
-        <activity android:name=".activity.AlarmRingActivity" android:exported="false"/>
+
+        <activity
+            android:name=".activity.NewAlarmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AlarmRingActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
