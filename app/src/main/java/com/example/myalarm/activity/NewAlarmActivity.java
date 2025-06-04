@@ -50,7 +50,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         alarmTypeList.clear();
         alarmTypeList.add(new SpinnerOption(OnceAlarmType.ALARM_TYPE, "响一次"));
         alarmTypeList.add(new SpinnerOption(EveryDayAlarmType.ALARM_TYPE, "每天"));
-        alarmTypeList.add(new SpinnerOption(WorkingDayAlarmType.ALARM_TYPE, "法定工作日"));
+        alarmTypeList.add(new SpinnerOption(WorkingDayAlarmType.ALARM_TYPE, "工作日"));
         alarmTypeList.add(new SpinnerOption(HolidayAlarmType.ALARM_TYPE, "非工作日"));
         alarmTypeList.add(new SpinnerOption(WeekAlarmType.ALARM_TYPE, "按周"));
         alarmTypeList.add(new SpinnerOption(DateAlarmType.ALARM_TYPE, "按日期"));
@@ -285,8 +285,8 @@ public class NewAlarmActivity extends AppCompatActivity {
         Log.i("terry", "设置的闹钟时间：" + hour + ":" + minute);
         Log.i("terry", "响铃规则：" + ringRule);
 //        Log.i("terry", "选择的日期：" + weekCheck.toString());
-        Log.i("terry", "法定工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
-        Log.i("terry", "非工作日不响铃：" + skipHolidaysSwitch.isChecked());
+        Log.i("terry", "工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
+        Log.i("terry", "工作日才响铃：" + skipHolidaysSwitch.isChecked());
         Log.i("terry", "闹钟名称：" + alarmName);
 
         return new AlarmEntity(alarmName, baseAlarmType, time);

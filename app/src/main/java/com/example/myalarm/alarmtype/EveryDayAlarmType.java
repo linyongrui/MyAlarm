@@ -17,9 +17,9 @@ public class EveryDayAlarmType extends BaseAlarmType {
         StringBuilder repeatDescBuilder = new StringBuilder();
         repeatDescBuilder.append("每天");
         if (Boolean.TRUE.equals(getSkipHoliday())) {
-            repeatDescBuilder.append("(非工作日不响铃)");
+            repeatDescBuilder.append("(工作日才响铃)");
         } else if (Boolean.TRUE.equals(getSkipWorkingDay())) {
-            repeatDescBuilder.append("(法定工作日不响铃)");
+            repeatDescBuilder.append("(工作日不响铃)");
         }
         return repeatDescBuilder.toString();
     }
