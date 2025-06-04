@@ -1,5 +1,6 @@
 package com.example.myalarm.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +24,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,7 +35,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    public static List<HolidayEntity> holidayEntities = new ArrayList<>();
+    public static final Set holidatSet = new HashSet();
+    public static final Set transferWorkdaySet = new HashSet<>();
+
     private AlarmAdapter alarmAdapter;
     private AlarmViewModel alarmViewModel;
 
@@ -44,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
 
         holidaysInit();
 
+        Context context = getApplicationContext();
+
         RecyclerView alarmRecyclerView = findViewById(R.id.alarmRecyclerView);
-        alarmRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        alarmRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         alarmAdapter = new AlarmAdapter();
         alarmRecyclerView.setAdapter(alarmAdapter);
 
@@ -69,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void holidaysInit() {
+        Log.i("terry", "holidaysInit");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
             HolidayDao holidayDao = DatabaseClient.getInstance().getHolidayEntityDatabase().holidayDao();
@@ -83,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
                             .url("https://unpkg.com/holiday-calendar@1.1.6/data/CN/2025.json")
                             .build();
                     try (Response response = client.newCall(request).execute()) {
-                        List<HolidayEntity> newHolidayEntities = HolidayUtils.responseHandle(response);
+                        List<HolidayEntity> newHolidayEntities = HolidayUtils.getHolidayEntityList(response);
                         HolidayEntity[] holidayEntitiesArray = newHolidayEntities.stream().toArray(HolidayEntity[]::new);
                         holidayDao.insertAll(holidayEntitiesArray);
 
-                        runOnUiThread(new Runnable() { // Assuming this is inside an Activity or Fragment
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 setHolidayEntity(newHolidayEntities);
@@ -104,7 +111,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setHolidayEntity(List<HolidayEntity> holidayEntities) {
-        this.holidayEntities = holidayEntities;
+        Set[] holidayEntitySetArray = HolidayUtils.getHolidayEntitySet(holidayEntities);
+
+        holidatSet.clear();
+        holidatSet.addAll(holidayEntitySetArray[0]);
+
+        transferWorkdaySet.clear();
+        transferWorkdaySet.addAll(holidayEntitySetArray[1]);
     }
 
 }

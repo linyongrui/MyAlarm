@@ -201,7 +201,7 @@
             android:id="@+id/tv_skip_holidays"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="法定节假日不响铃"
+            android:text="非工作日不响铃"
             android:textSize="15sp" />
 
         <Switch xmlns:android="http://schemas.android.com/apk/res/android"

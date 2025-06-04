@@ -109,7 +109,6 @@ public class NewAlarmActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerOption selectedOption = (SpinnerOption) parent.getItemAtPosition(position);
-//                Toast.makeText(context, "选中的选项: " + selectedOption.getOptionText() + ", ID: " + selectedOption.getOptionId(), Toast.LENGTH_SHORT).show();
                 ringRuleSpinnerSelectHandle(selectedOption.getOptionId());
             }
 
@@ -286,8 +285,8 @@ public class NewAlarmActivity extends AppCompatActivity {
         Log.i("terry", "设置的闹钟时间：" + hour + ":" + minute);
         Log.i("terry", "响铃规则：" + ringRule);
 //        Log.i("terry", "选择的日期：" + weekCheck.toString());
-        Log.i("terry", "除法定工作日：" + skipWorkingDaysSwitch.isChecked());
-        Log.i("terry", "除法定节假日：" + skipHolidaysSwitch.isChecked());
+        Log.i("terry", "法定工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
+        Log.i("terry", "非工作日不响铃：" + skipHolidaysSwitch.isChecked());
         Log.i("terry", "闹钟名称：" + alarmName);
 
         return new AlarmEntity(alarmName, baseAlarmType, time);
@@ -302,18 +301,19 @@ public class NewAlarmActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.SCHEDULE_EXACT_ALARM},
                     REQUEST_SCHEDULE_EXACT_ALARM);
         } else {
-            Toast.makeText(this, "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Context context = getApplicationContext();
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_SCHEDULE_EXACT_ALARM) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "权限被拒绝，无法设置精确闹钟", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "权限被拒绝，无法设置精确闹钟", Toast.LENGTH_SHORT).show();
             }
         }
     }

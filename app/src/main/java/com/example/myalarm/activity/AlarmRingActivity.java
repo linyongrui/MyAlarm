@@ -27,6 +27,7 @@ public class AlarmRingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring);
+        Context context = getApplicationContext();
 
         // 使用系统默认提示音
         Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -40,7 +41,7 @@ public class AlarmRingActivity extends AppCompatActivity {
             } else {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             }
-            mediaPlayer.setDataSource(this, defaultUri);
+            mediaPlayer.setDataSource(context, defaultUri);
             mediaPlayer.setLooping(true);
             mediaPlayer.prepare();
             mediaPlayer.start();
@@ -49,13 +50,13 @@ public class AlarmRingActivity extends AppCompatActivity {
         }
 
 
-//        mediaPlayer = MediaPlayer.create(this, R.raw.alarm_sound);
+//        mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound);
 //        mediaPlayer.setLooping(true);
 //        mediaPlayer.start();
 
         // 显示通知
         createNotificationChannel();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("闹钟提醒")
                 .setContentText("该起床啦！")
@@ -68,7 +69,7 @@ public class AlarmRingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer!= null) {
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
