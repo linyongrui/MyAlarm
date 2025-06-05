@@ -1,11 +1,14 @@
 package com.example.myalarm.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,6 +22,7 @@ import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.entity.HolidayEntity;
 import com.example.myalarm.util.HolidayUtils;
+import com.example.myalarm.util.PermissionUtils;
 import com.example.myalarm.viewmodel.AlarmViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -37,6 +41,10 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.POST_NOTIFICATIONS
+    };
+
     private AlarmAdapter alarmAdapter;
     private AlarmViewModel alarmViewModel;
 
@@ -46,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         holidaysInit();
+        permissionCheck();
 
         Context context = getApplicationContext();
 
@@ -72,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void holidaysInit() {
         Log.i("terry", "holidaysInit");
@@ -110,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     try (Response response = client.newCall(request).execute()) {
                         List<HolidayEntity> newHolidayEntities = HolidayUtils.getHolidayEntityList(response);
                         HolidayEntity[] holidayEntitiesArray = newHolidayEntities.stream().toArray(HolidayEntity[]::new);
-                        if(!isAppend) {
+                        if (!isAppend) {
                             holidayDao.deleteAllHolidayEntity();
                         }
                         holidayDao.insertAll(holidayEntitiesArray);
@@ -129,5 +137,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void permissionCheck() {
+        PermissionUtils.permissionCheck(this, PERMISSIONS, 2);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (PermissionUtils.prantResultCheck(grantResults)) {
+            Log.d("terry", "grant successed.");
+        } else {
+            Toast.makeText(getApplicationContext(), "权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
+            Log.d("terry", "grant failed.");
+
+        }
     }
 }

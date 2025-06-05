@@ -3,9 +3,8 @@ package com.example.myalarm.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,9 +19,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.myalarm.R;
@@ -36,13 +33,18 @@ import com.example.myalarm.alarmtype.WorkingDayAlarmType;
 import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
+import com.example.myalarm.util.PermissionUtils;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewAlarmActivity extends AppCompatActivity {
-    private static final int REQUEST_SCHEDULE_EXACT_ALARM = 1;
+    private static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.POST_NOTIFICATIONS
+    };
+
+    private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final List<SpinnerOption> alarmTypeList = new ArrayList<>();
 
     {
@@ -73,6 +75,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_alarm);
 
         Context context = getApplicationContext();
+        permissionCheck();
 
         findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,9 +228,6 @@ public class NewAlarmActivity extends AppCompatActivity {
     private void saveAlarm() {
         AlarmEntity newAlarmEntity = getNewAlarmEntity();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestScheduleExactAlarmPermission();
-        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -291,29 +291,20 @@ public class NewAlarmActivity extends AppCompatActivity {
         return new AlarmEntity(alarmName, baseAlarmType, time);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
-    private void requestScheduleExactAlarmPermission() {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.SCHEDULE_EXACT_ALARM)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SCHEDULE_EXACT_ALARM},
-                    REQUEST_SCHEDULE_EXACT_ALARM);
-        } else {
-            Toast.makeText(getApplicationContext(), "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
-        }
+
+    private void permissionCheck() {
+        PermissionUtils.permissionCheck(this, PERMISSIONS, PERMISSIONS_REQUEST_CODE);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Context context = getApplicationContext();
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_SCHEDULE_EXACT_ALARM) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(context, "权限已授予，可以设置精确闹钟", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "权限被拒绝，无法设置精确闹钟", Toast.LENGTH_SHORT).show();
-            }
+        if (PermissionUtils.prantResultCheck(grantResults)) {
+            Log.d("terry", "grant successed.");
+        } else {
+            Toast.makeText(getApplicationContext(), "权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
+            Log.d("terry", "grant failed.");
+
         }
     }
 
