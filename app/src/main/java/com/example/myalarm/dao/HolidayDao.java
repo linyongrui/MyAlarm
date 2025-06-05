@@ -1,10 +1,8 @@
 package com.example.myalarm.dao;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import com.example.myalarm.entity.HolidayEntity;
 
@@ -19,12 +17,6 @@ public interface HolidayDao {
     @Insert
     void insertAll(HolidayEntity... holidayEntities);
 
-    @Insert
-    long insertHolidayEntity(HolidayEntity HolidayEntity);
-
-    @Update
-    void updateHolidayEntity(HolidayEntity HolidayEntity);
-
-    @Delete
-    void deleteHolidayEntity(HolidayEntity HolidayEntity);
+    @Query("DELETE FROM HolidayEntity")
+    void deleteAllHolidayEntity();
 }

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-import com.example.myalarm.activity.MainActivity;
 import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.alarmtype.DateAlarmType;
 import com.example.myalarm.alarmtype.EveryDayAlarmType;
@@ -17,7 +16,6 @@ import com.example.myalarm.alarmtype.OnceAlarmType;
 import com.example.myalarm.alarmtype.WeekAlarmType;
 import com.example.myalarm.alarmtype.WorkingDayAlarmType;
 import com.example.myalarm.entity.AlarmEntity;
-import com.example.myalarm.entity.HolidayEntity;
 import com.example.myalarm.receiver.AlarmReceiver;
 
 import java.time.DayOfWeek;
@@ -30,7 +28,12 @@ import java.util.Set;
 
 public class AlarmUtils {
 
-    public static boolean isWorkingDay(LocalDate date, Set<HolidayEntity> holidatSet, Set<HolidayEntity> transferWorkdaySet) {
+    public static boolean isWorkingDay(LocalDate date) {
+
+        Set<String> holidatSet = HolidayUtils.getHolidaySet();
+        Set<String> transferWorkdaySet = HolidayUtils.getTransferWorkdaySet();
+//        Log.i("terry", "holidatSet.size()：" + holidatSet.size());
+//        Log.i("terry", "transferWorkdaySet.size()：" + transferWorkdaySet.size());
 
         boolean isWorkingDate;
         String dateStr = date.toString();
@@ -49,7 +52,18 @@ public class AlarmUtils {
         return isWorkingDate;
     }
 
-    public static LocalDate getNextTriggerDateForWeek(AlarmEntity alarmEntity, Set<HolidayEntity> holidatSet, Set<HolidayEntity> transferWorkdaySet) {
+    public static LocalDate getNextTriggerDateForDate(AlarmEntity alarmEntity) {
+        return null;
+    }
+
+    public static LocalDate getNextTriggerDateForOnce(LocalTime alarmTime) {
+        LocalDate today = LocalDate.now();
+        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
+        boolean isBeforeNow = !alarmTime.isAfter(timeNow);
+        return isBeforeNow ? today.plusDays(1L) : today;
+    }
+
+    public static LocalDate getNextTriggerDateForWeek(AlarmEntity alarmEntity) {
         LocalDate nextTriggerDate = null;
 
         LocalDate today = LocalDate.now();
@@ -75,7 +89,7 @@ public class AlarmUtils {
         boolean isNextTriggerDateT1Get = false;
         do {
             if (weekCheck[index] == 1) {
-                boolean isWorkingDay = isWorkingDay(nextTriggerDateCursor, holidatSet, transferWorkdaySet);
+                boolean isWorkingDay = isWorkingDay(nextTriggerDateCursor);
                 boolean isSkipCheckPass = (!isSkipHoliday && !isSkipWorkingDay) || (isSkipHoliday && isWorkingDay) || (isSkipWorkingDay && !isWorkingDay);
                 if (isSkipCheckPass) {
                     if (nextTriggerDateT1 == null) {
@@ -102,15 +116,17 @@ public class AlarmUtils {
         return nextTriggerDate;
     }
 
-    public static LocalDate getNextTriggerDateForHoliday(boolean isBeforeNow, Set<HolidayEntity> holidatSet, Set<HolidayEntity> transferWorkdaySet) {
-        LocalDate nextTriggerDate = null;
-
+    public static LocalDate getNextTriggerDateForHoliday(LocalTime alarmTime) {
         LocalDate today = LocalDate.now();
+        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
+        boolean isBeforeNow = !alarmTime.isAfter(timeNow);
+
+        LocalDate nextTriggerDate = null;
         LocalDate nextTriggerDateCursor = isBeforeNow ? today.plusDays(1L) : today;
         int count = 0;
         do {
             count++;
-            boolean isWorkingDay = isWorkingDay(nextTriggerDateCursor, holidatSet, transferWorkdaySet);
+            boolean isWorkingDay = isWorkingDay(nextTriggerDateCursor);
             if (isWorkingDay) {
                 nextTriggerDateCursor = nextTriggerDateCursor.plusDays(1L);
             } else {
@@ -121,15 +137,17 @@ public class AlarmUtils {
         return nextTriggerDate;
     }
 
-    public static LocalDate getNextTriggerDateForWorkingDay(boolean isBeforeNow, Set<HolidayEntity> holidatSet, Set<HolidayEntity> transferWorkdaySet) {
-        LocalDate nextTriggerDate = null;
-
+    public static LocalDate getNextTriggerDateForWorkingDay(LocalTime alarmTime) {
         LocalDate today = LocalDate.now();
+        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
+        boolean isBeforeNow = !alarmTime.isAfter(timeNow);
+
+        LocalDate nextTriggerDate = null;
         LocalDate nextTriggerDateCursor = isBeforeNow ? today.plusDays(1L) : today;
         int count = 0;
         do {
             count++;
-            boolean isWorkingDay = isWorkingDay(nextTriggerDateCursor, holidatSet, transferWorkdaySet);
+            boolean isWorkingDay = isWorkingDay(nextTriggerDateCursor);
             if (isWorkingDay) {
                 nextTriggerDate = nextTriggerDateCursor;
                 break;
@@ -141,32 +159,24 @@ public class AlarmUtils {
     }
 
     public static LocalDate getNextTriggerDate(AlarmEntity alarmEntity) {
-        LocalDate today = LocalDate.now();
-        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
-        boolean isBeforeNow = !alarmEntity.getTime().isAfter(timeNow);
-
-        Set<HolidayEntity> holidatSet = MainActivity.holidatSet;
-        Set<HolidayEntity> transferWorkdaySet = MainActivity.transferWorkdaySet;
-        Log.i("terry", "holidatSet.size()：" + holidatSet.size());
-        Log.i("terry", "transferWorkdaySet.size()：" + transferWorkdaySet.size());
-
-        LocalDate nextTriggerDate = null;
+        LocalDate nextTriggerDate;
         BaseAlarmType baseAlarmType = alarmEntity.getBaseAlarmType();
         switch (baseAlarmType.getType()) {
             case DateAlarmType.ALARM_TYPE:
+                nextTriggerDate = getNextTriggerDateForDate(alarmEntity);
                 break;
             case EveryDayAlarmType.ALARM_TYPE:
             case OnceAlarmType.ALARM_TYPE:
-                nextTriggerDate = isBeforeNow ? today.plusDays(1L) : today;
+                nextTriggerDate = getNextTriggerDateForOnce(alarmEntity.getTime());
                 break;
             case WeekAlarmType.ALARM_TYPE:
-                nextTriggerDate = getNextTriggerDateForWeek(alarmEntity, holidatSet, transferWorkdaySet);
+                nextTriggerDate = getNextTriggerDateForWeek(alarmEntity);
                 break;
             case HolidayAlarmType.ALARM_TYPE:
-                nextTriggerDate = getNextTriggerDateForHoliday(isBeforeNow, holidatSet, transferWorkdaySet);
+                nextTriggerDate = getNextTriggerDateForHoliday(alarmEntity.getTime());
                 break;
             case WorkingDayAlarmType.ALARM_TYPE:
-                nextTriggerDate = getNextTriggerDateForWorkingDay(isBeforeNow, holidatSet, transferWorkdaySet);
+                nextTriggerDate = getNextTriggerDateForWorkingDay(alarmEntity.getTime());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown alarm type: " + baseAlarmType.getType());

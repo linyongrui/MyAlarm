@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -281,13 +280,13 @@ public class NewAlarmActivity extends AppCompatActivity {
         baseAlarmType.setSkipHoliday(skipHolidaysSwitch.isChecked());
         String alarmName = alarmNameEditText.getText().toString();
 
-        Log.i("terry", "=========getNewAlarmEntity========");
-        Log.i("terry", "设置的闹钟时间：" + hour + ":" + minute);
-        Log.i("terry", "响铃规则：" + ringRule);
-//        Log.i("terry", "选择的日期：" + weekCheck.toString());
-        Log.i("terry", "工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
-        Log.i("terry", "工作日才响铃：" + skipHolidaysSwitch.isChecked());
-        Log.i("terry", "闹钟名称：" + alarmName);
+//        Log.i("terry", "=========getNewAlarmEntity========");
+//        Log.i("terry", "设置的闹钟时间：" + hour + ":" + minute);
+//        Log.i("terry", "响铃规则：" + ringRule);
+////        Log.i("terry", "选择的日期：" + weekCheck.toString());
+//        Log.i("terry", "工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
+//        Log.i("terry", "工作日才响铃：" + skipHolidaysSwitch.isChecked());
+//        Log.i("terry", "闹钟名称：" + alarmName);
 
         return new AlarmEntity(alarmName, baseAlarmType, time);
     }

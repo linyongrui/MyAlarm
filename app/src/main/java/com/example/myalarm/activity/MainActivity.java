@@ -24,8 +24,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.time.Month;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,8 +36,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    public static final Set holidatSet = new HashSet();
-    public static final Set transferWorkdaySet = new HashSet<>();
 
     private AlarmAdapter alarmAdapter;
     private AlarmViewModel alarmViewModel;
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         addAlarmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holidaysInit();
                 startActivity(new Intent(MainActivity.this, NewAlarmActivity.class));
             }
         });
@@ -76,48 +76,58 @@ public class MainActivity extends AppCompatActivity {
 
     private void holidaysInit() {
         Log.i("terry", "holidaysInit");
+
+        LocalDate today = LocalDate.now();
+        int thisYear = today.getYear();
+        int nextYear = thisYear + 1;
+
+        Set<Integer> yearInitialized = HolidayUtils.getYearInitialized();
+        if (!yearInitialized.contains(thisYear)) {
+            getHolidayFromUrl(thisYear, false);
+        }
+
+        if (Objects.equals(Month.DECEMBER, today.getMonth()) && !yearInitialized.contains(nextYear)) {
+            getHolidayFromUrl(thisYear, false);
+            getHolidayFromUrl(nextYear, true);
+        }
+    }
+
+    private void getHolidayFromUrl(int year, boolean isAppend) {
+        String url = HolidayUtils.GET_HOLIDAY_URL.replace("{year}", year + "");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
             HolidayDao holidayDao = DatabaseClient.getInstance().getHolidayEntityDatabase().holidayDao();
 
             @Override
             public void run() {
-                List<HolidayEntity> holidayEntities = holidayDao.getHolidaysByYear(LocalDate.now().getYear());
-                Log.i("terry", "holidayEntities.size(): " + holidayEntities.size());
+                List<HolidayEntity> holidayEntities = holidayDao.getHolidaysByYear(year);
+                Log.i("terry", year + " holidayEntity size: " + holidayEntities.size());
                 if (holidayEntities.isEmpty()) {
                     OkHttpClient client = new OkHttpClient();
                     Request request = new Request.Builder()
-                            .url("https://unpkg.com/holiday-calendar@1.1.6/data/CN/2025.json")
+                            .url(url)
                             .build();
                     try (Response response = client.newCall(request).execute()) {
                         List<HolidayEntity> newHolidayEntities = HolidayUtils.getHolidayEntityList(response);
                         HolidayEntity[] holidayEntitiesArray = newHolidayEntities.stream().toArray(HolidayEntity[]::new);
+                        if(!isAppend) {
+                            holidayDao.deleteAllHolidayEntity();
+                        }
                         holidayDao.insertAll(holidayEntitiesArray);
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                setHolidayEntity(newHolidayEntities);
+                                HolidayUtils.setHolidayEntity(newHolidayEntities, isAppend);
                             }
                         });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    runOnUiThread(() -> setHolidayEntity(holidayEntities));
+                    runOnUiThread(() -> HolidayUtils.setHolidayEntity(holidayEntities, isAppend));
                 }
             }
         });
     }
-
-    private void setHolidayEntity(List<HolidayEntity> holidayEntities) {
-        Set[] holidayEntitySetArray = HolidayUtils.getHolidayEntitySet(holidayEntities);
-
-        holidatSet.clear();
-        holidatSet.addAll(holidayEntitySetArray[0]);
-
-        transferWorkdaySet.clear();
-        transferWorkdaySet.addAll(holidayEntitySetArray[1]);
-    }
-
 }
