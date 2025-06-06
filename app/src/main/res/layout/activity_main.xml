@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/bg_gray"
     tools:context=".activity.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -17,35 +17,37 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:layout_height="match_parent"
+            android:background="@color/bg_gray"
             android:elevation="4dp"
             android:paddingStart="16dp"
             android:paddingEnd="0dp"
             app:contentInsetStartWithNavigation="0dp"
+            app:subtitle="距离下次响铃还有 2 天"
+            app:subtitleTextColor="@android:color/black"
             app:title="闹钟"
-            app:titleTextColor="@android:color/white" />
+            app:titleTextColor="@android:color/black" />
     </com.google.android.material.appbar.AppBarLayout>
-
-    <TextView
-        android:id="@+id/tv_time_until_next_ring"
-        android:layout_below="@id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="70dp"
-        android:paddingBottom="0dp"
-        android:layout_marginStart="20dp"
-        android:text="距离下次响铃还有 2 天"
-        android:textSize="16dp" />
+    <!--
+        <TextView
+            android:id="@+id/tv_time_until_next_ring"
+            android:layout_below="@id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="70dp"
+            android:paddingBottom="0dp"
+            android:layout_marginStart="20dp"
+            android:text="距离下次响铃还有 2 天"
+            android:textSize="16dp" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginTop="0dp"
         android:clipToPadding="false"
         android:paddingTop="0dp"
-        android:paddingBottom="65dp"
+        android:paddingBottom="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -57,9 +59,9 @@
         android:layout_margin="16dp"
         android:contentDescription="添加闹钟"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/blue"
-        app:rippleColor="@color/gray"
+        app:backgroundTint="@color/colorPrimary"
         app:elevation="6dp"
-        app:fabSize="normal" />
+        app:fabSize="auto"
+        app:rippleColor="@color/gray" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

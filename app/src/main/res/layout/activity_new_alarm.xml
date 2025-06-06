@@ -2,15 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_gray"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/btn_cancel"
@@ -19,7 +20,7 @@
             android:layout_weight="1"
             android:gravity="left"
             android:text="取消"
-            android:textColor="@color/blue"
+            android:textColor="@color/colorPrimary"
             android:textSize="18sp" />
 
         <TextView
@@ -38,7 +39,7 @@
             android:layout_weight="1"
             android:gravity="right"
             android:text="完成"
-            android:textColor="@color/blue"
+            android:textColor="@color/colorPrimary"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -46,198 +47,241 @@
         android:id="@+id/tv_time_until_next_ring"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:textAlignment="center"
-        android:textSize="15sp" />
+        android:textSize="14sp" />
 
-    <TimePicker
-        android:id="@+id/timePicker"
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:timePickerMode="spinner" />
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="8dp"
+        app:cardUseCompatPadding="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="10dp">
-
-        <TextView
-            android:id="@+id/tv_ring_rule"
-            android:layout_width="wrap_content"
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="类型："
-            android:textSize="15sp" />
+            android:timePickerMode="spinner" />
+    </androidx.cardview.widget.CardView>
 
-        <Spinner
-            android:id="@+id/spinner_ring_rule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/tv_ring_repeat_dates_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="响铃重复日期"
-        android:textSize="15sp" />
-
-    <TextView
-        android:id="@+id/tv_ring_repeat_dates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/blue"
-        android:paddingTop="6dp"
-        android:textSize="15sp" />
-
-    <LinearLayout
-        android:id="@+id/ll_days_of_week"
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="10dp">
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="8dp"
+        app:cardUseCompatPadding="true">
 
-        <ToggleButton
-            android:id="@+id/btn_sunday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="日"
-            android:textOff="日"
-            android:textOn="日" />
-
-        <ToggleButton
-            android:id="@+id/btn_monday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="一"
-            android:textOff="一"
-            android:textOn="一" />
-
-        <ToggleButton
-            android:id="@+id/btn_tuesday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="二"
-            android:textOff="二"
-            android:textOn="二" />
-
-        <ToggleButton
-            android:id="@+id/btn_wednesday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="三"
-            android:textOff="三"
-            android:textOn="三" />
-
-        <ToggleButton
-            android:id="@+id/btn_thursday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="四"
-            android:textOff="四"
-            android:textOn="四" />
-
-        <ToggleButton
-            android:id="@+id/btn_friday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="五"
-            android:textOff="五"
-            android:textOn="五" />
-
-        <ToggleButton
-            android:id="@+id/btn_saturday"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/weekday_button_selector"
-            android:text="六"
-            android:textOff="六"
-            android:textOn="六" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_skip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="10dp">
-
-        <TextView
-            android:id="@+id/tv_skip_workingDay"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="工作日不响铃"
-            android:textSize="15sp" />
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <Switch xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/switch_skip_workingDay"
-            android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="0dp">
+
+                <TextView
+                    android:id="@+id/tv_ring_rule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="类型："
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_ring_rule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_ring_repeat_dates_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="响铃重复日期"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_ring_repeat_dates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/ll_days_of_week"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="10dp">
+
+                <ToggleButton
+                    android:id="@+id/btn_sunday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="日"
+                    android:textOff="日"
+                    android:textOn="日" />
+
+                <ToggleButton
+                    android:id="@+id/btn_monday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="一"
+                    android:textOff="一"
+                    android:textOn="一" />
+
+                <ToggleButton
+                    android:id="@+id/btn_tuesday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="二"
+                    android:textOff="二"
+                    android:textOn="二" />
+
+                <ToggleButton
+                    android:id="@+id/btn_wednesday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="三"
+                    android:textOff="三"
+                    android:textOn="三" />
+
+                <ToggleButton
+                    android:id="@+id/btn_thursday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="四"
+                    android:textOff="四"
+                    android:textOn="四" />
+
+                <ToggleButton
+                    android:id="@+id/btn_friday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="五"
+                    android:textOff="五"
+                    android:textOn="五" />
+
+                <ToggleButton
+                    android:id="@+id/btn_saturday"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/weekday_button_selector"
+                    android:text="六"
+                    android:textOff="六"
+                    android:textOn="六" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_skip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:id="@+id/tv_skip_workingDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="工作日不响铃"
+                    android:textSize="15sp" />
+
+                <Switch xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/switch_skip_workingDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/CustomSwitchStyle" />
+
+                <TextView
+                    android:id="@+id/tv_skip_holidays"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="工作日才响铃"
+                    android:textSize="15sp" />
+
+                <Switch xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/switch_skip_holidays"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/CustomSwitchStyle" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="8dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/CustomSwitchStyle" />
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <TextView
-            android:id="@+id/tv_skip_holidays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="工作日才响铃"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/et_alarm_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="闹钟名称"
+                android:paddingTop="16dp" />
 
-        <Switch xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/switch_skip_holidays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:theme="@style/CustomSwitchStyle" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tv_ringtone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="铃声：默认铃声"
+                android:textSize="15sp" />
 
-    <EditText
-        android:id="@+id/et_alarm_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="闹钟名称"
-        android:paddingTop="16dp" />
+            <TextView
+                android:id="@+id/tv_vibration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="振动：默认振动"
+                android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/tv_ringtone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="铃声：默认铃声"
-        android:textSize="15sp" />
-
-    <TextView
-        android:id="@+id/tv_vibration"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="振动：默认振动"
-        android:textSize="15sp" />
-
-    <TextView
-        android:id="@+id/tv_snooze"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="稍后提醒：响铃间隔5分钟，响铃次数3次"
-        android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tv_snooze"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="稍后提醒：响铃间隔5分钟，响铃次数3次"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

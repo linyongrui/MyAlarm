@@ -2,6 +2,6 @@
 <resources>
 
     <style name="CustomSwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
-        <item name="colorControlActivated">@color/blue</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 </resources>

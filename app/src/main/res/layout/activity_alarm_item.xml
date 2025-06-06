@@ -3,28 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="0dp"
     app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
     app:cardUseCompatPadding="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="15dp">
 
         <TextView
             android:id="@+id/timeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:paddingTop="5dp"
             android:textColor="@android:color/black"
-            android:textSize="26sp"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
@@ -36,7 +34,7 @@
             android:paddingTop="3dp"
             android:paddingEnd="3dp"
             android:textColor="@android:color/darker_gray"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <Switch
             android:id="@+id/alarmSwitch"
