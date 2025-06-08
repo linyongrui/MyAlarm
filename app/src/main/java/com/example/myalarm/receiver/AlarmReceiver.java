@@ -15,9 +15,25 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent serviceIntent = new Intent(context, RingtoneService.class);
         context.startService(serviceIntent);
 
-        Intent ringIntent = new Intent(context, AlarmRingActivity.class);
-        ringIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(ringIntent);
+//        Intent ringIntent = new Intent(context, AlarmRingActivity.class);
+//        ringIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        context.startActivity(ringIntent);
+
+       /* Intent ringPageIntent = new Intent(context, AlarmRingActivity.class);
+        ringPageIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                ringPageIntent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            throw new RuntimeException(e);
+        }*/
     }
 
     private PendingIntent getContentIntent(Context context, Intent intent) {

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE_PERMISSION = 100;
     private static final String[] PERMISSIONS = new String[]{
             Manifest.permission.POST_NOTIFICATIONS
     };
@@ -52,11 +54,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Context context = getApplicationContext();
 
         holidaysInit();
         permissionCheck();
 
-        Context context = getApplicationContext();
+//        ActivityResultLauncher mDrawOverAppsLauncher = PermissionUtils.getActivityResultLauncher(this);
+//        PermissionUtils.overlayPermissionCheck(context, mDrawOverAppsLauncher, null);
 
         RecyclerView alarmRecyclerView = findViewById(R.id.alarmRecyclerView);
         alarmRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -140,18 +144,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void permissionCheck() {
-        PermissionUtils.permissionCheck(this, PERMISSIONS, 2);
+        PermissionUtils.permissionCheck(this, PERMISSIONS, REQUEST_CODE_PERMISSION);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (PermissionUtils.prantResultCheck(grantResults)) {
+        if (PermissionUtils.grantResultCheck(grantResults)) {
             Log.d("terry", "grant successed.");
         } else {
-            Toast.makeText(getApplicationContext(), "权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "通知权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
             Log.d("terry", "grant failed.");
-
+            PermissionUtils.jumpToPermissionGrant(this, Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         }
     }
 }

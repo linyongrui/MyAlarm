@@ -30,8 +30,6 @@ public class AlarmUtils {
 
         Set<String> holidatSet = HolidayUtils.getHolidaySet();
         Set<String> transferWorkdaySet = HolidayUtils.getTransferWorkdaySet();
-//        Log.i("terry", "holidatSet.size()：" + holidatSet.size());
-//        Log.i("terry", "transferWorkdaySet.size()：" + transferWorkdaySet.size());
 
         boolean isWorkingDate;
         String dateStr = date.toString();
@@ -225,7 +223,7 @@ public class AlarmUtils {
                 PendingIntent.FLAG_IMMUTABLE
         );
 
-        alarmManager.setExactAndAllowWhileIdle( AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
     }
 
     public static void cancelAlarm(Context context, int alarmId) {

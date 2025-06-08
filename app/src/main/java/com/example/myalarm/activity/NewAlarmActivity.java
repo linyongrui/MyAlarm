@@ -1,10 +1,8 @@
 package com.example.myalarm.activity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,7 +16,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -33,18 +30,17 @@ import com.example.myalarm.alarmtype.WorkingDayAlarmType;
 import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
-import com.example.myalarm.util.PermissionUtils;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewAlarmActivity extends AppCompatActivity {
-    private static final String[] PERMISSIONS = new String[]{
-            Manifest.permission.POST_NOTIFICATIONS
-    };
+//    private static final String[] PERMISSIONS = new String[]{
+//            Manifest.permission.POST_NOTIFICATIONS
+//    };
 
-    private static final int PERMISSIONS_REQUEST_CODE = 1;
+//    private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final List<SpinnerOption> alarmTypeList = new ArrayList<>();
 
     {
@@ -75,7 +71,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_alarm);
 
         Context context = getApplicationContext();
-        permissionCheck();
+//        permissionCheck();
 
         findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,7 +287,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         return new AlarmEntity(alarmName, baseAlarmType, time);
     }
 
-
+/*
     private void permissionCheck() {
         PermissionUtils.permissionCheck(this, PERMISSIONS, PERMISSIONS_REQUEST_CODE);
     }
@@ -299,14 +295,14 @@ public class NewAlarmActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (PermissionUtils.prantResultCheck(grantResults)) {
+        if (PermissionUtils.grantResultCheck(grantResults)) {
             Log.d("terry", "grant successed.");
         } else {
             Toast.makeText(getApplicationContext(), "权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
             Log.d("terry", "grant failed.");
 
         }
-    }
+    }*/
 
     private class SpinnerOption {
         private String optionId;
