@@ -13,6 +13,7 @@ import com.example.myalarm.alarmtype.HolidayAlarmType;
 import com.example.myalarm.alarmtype.OnceAlarmType;
 import com.example.myalarm.alarmtype.WeekAlarmType;
 import com.example.myalarm.alarmtype.WorkingDayAlarmType;
+import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.receiver.AlarmReceiver;
 
@@ -224,6 +225,7 @@ public class AlarmUtils {
         );
 
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+        Log.i("terry", "setAlarm" + alarm.getId());
     }
 
     public static void cancelAlarm(Context context, int alarmId) {
@@ -233,8 +235,38 @@ public class AlarmUtils {
                 context,
                 alarmId,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE
         );
         alarmManager.cancel(pendingIntent);
+        Log.i("terry", "cancelAlarm" + alarmId);
+    }
+
+    public static void saveAlarm(Context context, AlarmEntity newAlarmEntity) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long id = DatabaseClient.getInstance()
+                        .getAlarmEntityDatabase()
+                        .alarmDao()
+                        .insertAlarmEntity(newAlarmEntity);
+                newAlarmEntity.setId(id);
+                Log.i("terry", "saveAlarm" + newAlarmEntity.getId());
+                setAlarm(context, newAlarmEntity);
+            }
+        }).start();
+    }
+
+    public static void updateAlarmEnabled(Context context, long alarmId, boolean enabled) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseClient.getInstance()
+                        .getAlarmEntityDatabase()
+                        .alarmDao()
+                        .updateAlarmEnabled(alarmId, enabled);
+                Log.i("terry", "updateAlarm" + alarmId);
+                cancelAlarm(context, (int) alarmId);
+            }
+        }).start();
     }
 }

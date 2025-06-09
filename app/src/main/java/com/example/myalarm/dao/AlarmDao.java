@@ -22,6 +22,9 @@ public interface AlarmDao {
     @Insert
     long insertAlarmEntity(AlarmEntity alarmEntity);
 
+    @Query("UPDATE alarmEntity SET enabled = :enabled WHERE id = :id")
+    void updateAlarmEnabled(long id, boolean enabled);
+
     @Update
     void updateAlarmEntity(AlarmEntity alarmEntity);
 
