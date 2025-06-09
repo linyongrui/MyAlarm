@@ -256,7 +256,9 @@ public class AlarmUtils {
         }).start();
     }
 
-    public static void updateAlarmEnabled(Context context, long alarmId, boolean enabled) {
+    public static void updateAlarmEnabled(Context context, AlarmEntity alarmEntity) {
+        long alarmId = alarmEntity.getId();
+        boolean enabled = alarmEntity.isEnabled();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -264,8 +266,11 @@ public class AlarmUtils {
                         .getAlarmEntityDatabase()
                         .alarmDao()
                         .updateAlarmEnabled(alarmId, enabled);
-                Log.i("terry", "updateAlarm" + alarmId);
-                cancelAlarm(context, (int) alarmId);
+                if (enabled) {
+                    setAlarm(context, alarmEntity);
+                } else {
+                    cancelAlarm(context, (int) alarmId);
+                }
             }
         }).start();
     }

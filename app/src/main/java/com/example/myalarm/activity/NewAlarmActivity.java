@@ -27,7 +27,6 @@ import com.example.myalarm.alarmtype.HolidayAlarmType;
 import com.example.myalarm.alarmtype.OnceAlarmType;
 import com.example.myalarm.alarmtype.WeekAlarmType;
 import com.example.myalarm.alarmtype.WorkingDayAlarmType;
-import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
 import com.example.myalarm.util.PermissionUtils;
@@ -224,12 +223,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                long id = DatabaseClient.getInstance()
-                        .getAlarmEntityDatabase()
-                        .alarmDao()
-                        .insertAlarmEntity(newAlarmEntity);
-                newAlarmEntity.setId(id);
-                AlarmUtils.setAlarm(getApplicationContext(), newAlarmEntity);
+                AlarmUtils.saveAlarm(getApplicationContext(), newAlarmEntity);
                 finish();
             }
         }).start();

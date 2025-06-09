@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         FloatingActionButton addAlarmButton = findViewById(R.id.addAlarmButton);
         addAlarmButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myalarm.entity.AlarmEntity;
+import com.example.myalarm.util.AlarmUtils;
 
 
 public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder> {
@@ -48,8 +49,9 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         String timeStr = alarmEntity.getTime().toString();
         holder.timeTextView.setText(timeStr);
         holder.repeatTextView.setText(alarmEntity.getRepeatStr());
-        holder.alarmSwitch.setChecked(alarmEntity.isEnabled());
 
+        holder.alarmSwitch.setOnCheckedChangeListener(null);
+        holder.alarmSwitch.setChecked(alarmEntity.isEnabled());
         holder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -57,6 +59,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
                 String status = isChecked ? "启用" : "禁用";
                 String message = "闹钟 " + timeStr + " 已" + status;
                 android.widget.Toast.makeText(buttonView.getContext(), message, android.widget.Toast.LENGTH_SHORT).show();
+                AlarmUtils.updateAlarmEnabled( holder.alarmSwitch.getContext(), alarmEntity);
             }
         });
     }
