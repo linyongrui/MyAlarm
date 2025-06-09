@@ -58,9 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         holidaysInit();
         permissionCheck();
-
-//        ActivityResultLauncher mDrawOverAppsLauncher = PermissionUtils.getActivityResultLauncher(this);
-//        PermissionUtils.overlayPermissionCheck(context, mDrawOverAppsLauncher, null);
+        PermissionUtils.overlayPermissionCheck(this);
 
         RecyclerView alarmRecyclerView = findViewById(R.id.alarmRecyclerView);
         alarmRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -81,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 holidaysInit();
+                permissionCheck();
                 startActivity(new Intent(MainActivity.this, NewAlarmActivity.class));
             }
         });

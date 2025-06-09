@@ -30,17 +30,14 @@ import com.example.myalarm.alarmtype.WorkingDayAlarmType;
 import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
+import com.example.myalarm.util.PermissionUtils;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewAlarmActivity extends AppCompatActivity {
-//    private static final String[] PERMISSIONS = new String[]{
-//            Manifest.permission.POST_NOTIFICATIONS
-//    };
 
-//    private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final List<SpinnerOption> alarmTypeList = new ArrayList<>();
 
     {
@@ -71,7 +68,7 @@ public class NewAlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_alarm);
 
         Context context = getApplicationContext();
-//        permissionCheck();
+        PermissionUtils.overlayPermissionCheck(this);
 
         findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -276,33 +273,8 @@ public class NewAlarmActivity extends AppCompatActivity {
         baseAlarmType.setSkipHoliday(skipHolidaysSwitch.isChecked());
         String alarmName = alarmNameEditText.getText().toString();
 
-//        Log.i("terry", "=========getNewAlarmEntity========");
-//        Log.i("terry", "设置的闹钟时间：" + hour + ":" + minute);
-//        Log.i("terry", "响铃规则：" + ringRule);
-////        Log.i("terry", "选择的日期：" + weekCheck.toString());
-//        Log.i("terry", "工作日不响铃：" + skipWorkingDaysSwitch.isChecked());
-//        Log.i("terry", "工作日才响铃：" + skipHolidaysSwitch.isChecked());
-//        Log.i("terry", "闹钟名称：" + alarmName);
-
         return new AlarmEntity(alarmName, baseAlarmType, time);
     }
-
-/*
-    private void permissionCheck() {
-        PermissionUtils.permissionCheck(this, PERMISSIONS, PERMISSIONS_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (PermissionUtils.grantResultCheck(grantResults)) {
-            Log.d("terry", "grant successed.");
-        } else {
-            Toast.makeText(getApplicationContext(), "权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
-            Log.d("terry", "grant failed.");
-
-        }
-    }*/
 
     private class SpinnerOption {
         private String optionId;

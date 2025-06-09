@@ -65,6 +65,11 @@ public class PermissionUtils {
         activity.startActivity(intent);
     }
 
+    public static void overlayPermissionCheck(ComponentActivity componentActivity) {
+        ActivityResultLauncher mDrawOverAppsLauncher = PermissionUtils.getActivityResultLauncher(componentActivity);
+        PermissionUtils.overlayPermissionCheckWithResource(componentActivity.peekAvailableContext(), mDrawOverAppsLauncher, null);
+    }
+
     public static ActivityResultLauncher getActivityResultLauncher(ComponentActivity componentActivity) {
         return componentActivity.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -79,7 +84,7 @@ public class PermissionUtils {
                 });
     }
 
-    public static View overlayPermissionCheck(Context context, ActivityResultLauncher mDrawOverAppsLauncher, Integer resource) {
+    public static View overlayPermissionCheckWithResource(Context context, ActivityResultLauncher mDrawOverAppsLauncher, Integer resource) {
         View view = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(context)) {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -35,7 +35,7 @@ public class RingtoneService extends Service {
         Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0.02F, 0.02F);
+        mediaPlayer.setVolume(0.01F, 0.01F);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -51,48 +51,48 @@ public class RingtoneService extends Service {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Log.i("terry", "onCreate");
-        mediaPlayer.start();
-//        mediaPlayer.start();
-//        acquireWakeLock();
-
     }
 
     @SuppressLint("ForegroundServiceType")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // 创建通知 channel（Android 8+ 要求）
+        acquireWakeLock();
+        // 创建全屏通知 + 通知 channel
         String channelId = "alarm_channel";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    channelId, "Alarm Channel", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Alarm is ringing");
+                    channelId, "Alarm Notifications", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Alarm full screen");
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
             NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
-            }
+            if (manager != null) manager.createNotificationChannel(channel);
         }
+
+        // 全屏 Intent
+        Intent fullScreenIntent = new Intent(this, AlarmRingActivity.class);
+        fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(
+                this, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE);
 
         // 构建通知
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle("闹钟响铃")
-                .setContentText("正在响铃")
+                .setContentText("正在响铃...")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .setAutoCancel(true)
                 .build();
 
         startForeground(1, notification);
 
-        // 启动响铃 Activity
-        Intent activityIntent = new Intent(this, AlarmRingActivity.class);
-        activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(activityIntent);
-
-        Log.i("terry", "onStartCommand");
-//        stopSelf(); // 启动后即可关闭服务
-//        return START_NOT_STICKY;
-
         mediaPlayer.start();
+        startActivity(fullScreenIntent);
+
         return START_STICKY;
     }
 
@@ -102,7 +102,7 @@ public class RingtoneService extends Service {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
-//            releaseWakeLock();
+            releaseWakeLock();
         }
     }
 
