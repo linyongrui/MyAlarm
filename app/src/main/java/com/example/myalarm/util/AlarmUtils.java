@@ -200,9 +200,8 @@ public class AlarmUtils {
     }
 
     public static String getNextTriggerTimeLeft(List<AlarmEntity> alarmEntities) {
-        String timeLeftStr = "还没有闹钟，请点击下方 + 新建闹钟";
         if (alarmEntities == null || alarmEntities.isEmpty()) {
-            return timeLeftStr;
+            return "还没有闹钟，请点击下方 + 新建闹钟";
         }
 
         int[] minTimeLeft = null;
@@ -215,7 +214,7 @@ public class AlarmUtils {
             }
         }
         if (minTimeLeft == null) {
-            return timeLeftStr;
+            return "请开启已有的闹钟，或者点击下方 + 新建闹钟";
         } else {
             StringBuilder timeLeftBuilder = new StringBuilder();
             timeLeftBuilder.append("距离下次响铃还有");

@@ -99,14 +99,14 @@
                 <Spinner
                     android:id="@+id/spinner_ring_rule"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_ring_repeat_dates_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="16dp"
+                android:paddingTop="6dp"
                 android:text="响铃重复日期"
                 android:textSize="16sp" />
 

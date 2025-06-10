@@ -219,7 +219,20 @@ public class NewAlarmActivity extends AppCompatActivity {
 
     private void saveAlarm() {
         AlarmEntity newAlarmEntity = getNewAlarmEntity();
-
+        if (WeekAlarmType.ALARM_TYPE.equals(newAlarmEntity.getBaseAlarmType().getType())) {
+            WeekAlarmType weekAlarmType = (WeekAlarmType) newAlarmEntity.getBaseAlarmType();
+            int[] checkedArray = weekAlarmType.getWeekDayCheck();
+            boolean isAllUnchecked = true;
+            for (int i = 0; i < 7; i++) {
+                if (checkedArray[i] == 1) {
+                    isAllUnchecked = false;
+                }
+            }
+            if (isAllUnchecked) {
+                Toast.makeText(this.getApplicationContext(), "请选择周几", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
