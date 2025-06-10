@@ -1,5 +1,6 @@
 package com.example.myalarm.util;
 
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Set;
 
 public class AlarmUtils {
@@ -195,6 +197,39 @@ public class AlarmUtils {
             NextTriggerTimeLeft = new int[]{days, hours, minutes};
         }
         return NextTriggerTimeLeft;
+    }
+
+    public static String getNextTriggerTimeLeft(List<AlarmEntity> alarmEntities) {
+        String timeLeftStr = "还没有闹钟，请点击下方 + 新建闹钟";
+        if (alarmEntities == null || alarmEntities.isEmpty()) {
+            return timeLeftStr;
+        }
+
+        int[] minTimeLeft = null;
+        for (AlarmEntity alarmEntity : alarmEntities) {
+            if (alarmEntity.isEnabled()) {
+                int[] timeLeft = AlarmUtils.getNextTriggerTimeLeft(alarmEntity);
+                if (minTimeLeft == null || minTimeLeft[0] > timeLeft[0] || minTimeLeft[1] > timeLeft[1] || minTimeLeft[2] > timeLeft[2]) {
+                    minTimeLeft = timeLeft;
+                }
+            }
+        }
+        if (minTimeLeft == null) {
+            return timeLeftStr;
+        } else {
+            StringBuilder timeLeftBuilder = new StringBuilder();
+            timeLeftBuilder.append("距离下次响铃还有");
+            if (minTimeLeft[0] > 0) {
+                timeLeftBuilder.append(minTimeLeft[0] + "天");
+            }
+            if (minTimeLeft[1] > 0) {
+                timeLeftBuilder.append(minTimeLeft[1] + "小时");
+            }
+            if (minTimeLeft[2] > 0) {
+                timeLeftBuilder.append(minTimeLeft[2] + "分钟");
+            }
+            return timeLeftBuilder.toString();
+        }
     }
 
     public static long getNextTriggerTime(AlarmEntity alarmEntity) {

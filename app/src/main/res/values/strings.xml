@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">MyAlarm</string>
+    <string name="not_any_alarm_cn">还没有闹钟，请点击下方 + 新建闹钟</string>
+    <string name="btn_cancel_cn">取消</string>
+    <string name="new_alarm_cn">新建闹钟</string>
+    <string name="btn_done_cn">完成</string>
+    <string name="btn_sunday_cn">日</string>
+    <string name="btn_monday_cn">一</string>
+    <string name="btn_tuesday_cn">二</string>
+    <string name="btn_wednesday_cn">三</string>
+    <string name="btn_thursday_cn">四</string>
+    <string name="btn_friday_cn">五</string>
+    <string name="btn_saturday_cn">六</string>
 </resources>

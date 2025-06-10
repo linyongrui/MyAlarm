@@ -94,10 +94,10 @@ public class NewAlarmActivity extends AppCompatActivity {
         ringRuleSpinner = findViewById(R.id.spinner_ring_rule);
         ArrayAdapter<SpinnerOption> adapter = new ArrayAdapter<>(
                 context,
-                android.R.layout.simple_spinner_item,
+                R.layout.custom_spinner_item,
                 alarmTypeList
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         ringRuleSpinner.setAdapter(adapter);
         ringRuleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

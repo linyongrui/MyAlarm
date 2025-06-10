@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myalarm.AlarmAdapter;
+import com.example.myalarm.adapter.AlarmAdapter;
 import com.example.myalarm.R;
 import com.example.myalarm.dao.HolidayDao;
 import com.example.myalarm.data.DatabaseClient;
@@ -74,6 +74,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        alarmViewModel.startCountdownTo();
+        alarmViewModel.getTimeLeft().observe(this, timeLeft -> {
+            if (timeLeft != null) {
+                toolbar.setSubtitle(timeLeft);
+            }
+        });
 
         FloatingActionButton addAlarmButton = findViewById(R.id.addAlarmButton);
         addAlarmButton.setOnClickListener(new View.OnClickListener() {

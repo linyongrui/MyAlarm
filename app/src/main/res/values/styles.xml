@@ -4,4 +4,14 @@
     <style name="CustomSwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
         <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
+
+    <style name="ToolbarTitleStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">35sp</item>
+    </style>
+
+    <style name="ToolbarSubtitleStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>
