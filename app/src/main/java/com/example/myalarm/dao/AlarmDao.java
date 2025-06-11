@@ -2,7 +2,6 @@ package com.example.myalarm.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -28,6 +27,6 @@ public interface AlarmDao {
     @Update
     void updateAlarmEntity(AlarmEntity alarmEntity);
 
-    @Delete
-    void deleteAlarmEntity(AlarmEntity alarmEntity);
+    @Query("DELETE FROM AlarmEntity WHERE ID=:alarmId")
+    void deleteById(long alarmId);
 }

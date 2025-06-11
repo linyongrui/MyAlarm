@@ -1,5 +1,6 @@
 package com.example.myalarm.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,13 +51,35 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         this.listener = l;
     }
 
-    private Set<Long> selectedIds = new HashSet<>();
+    public interface OnMultiSelectStartListener {
+        void onMultiSelectStart(boolean multiSelectMode);
+    }
+
+    private OnMultiSelectStartListener multiSelectListener;
+
+    public void setOnMultiSelectStartListener(OnMultiSelectStartListener listener) {
+        this.multiSelectListener = listener;
+    }
+
     private boolean multiSelectMode = false;
 
-    public void setMultiSelectMode(boolean enabled) {
-        multiSelectMode = enabled;
-        notifyDataSetChanged();
+    @SuppressLint("NotifyDataSetChanged")
+    public void setMultiSelectMode(boolean multiSelectMode) {
+        this.multiSelectMode = multiSelectMode;
+        if (multiSelectListener != null) {
+            multiSelectListener.onMultiSelectStart(multiSelectMode);
+            notifyDataSetChanged();
+            if (!multiSelectMode) {
+                selectedIds.clear();
+            }
+        }
     }
+
+    public boolean isInMultiSelectMode() {
+        return multiSelectMode;
+    }
+
+    private Set<Long> selectedIds = new HashSet<>();
 
     public Set<Long> getSelectedIds() {
         return selectedIds;
@@ -106,11 +129,15 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             checkBox = itemView.findViewById(R.id.checkbox);
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         public void bind(AlarmEntity alarm) {
             itemView.setOnLongClickListener(v -> {
+                if (multiSelectListener != null) {
+                    multiSelectListener.onMultiSelectStart(true);
+                    notifyDataSetChanged();
+                }
                 multiSelectMode = true;
                 selectedIds.add(alarm.getId());
-                notifyDataSetChanged();
                 return true;
             });
 
@@ -130,10 +157,6 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             checkBox.setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
             checkBox.setChecked(selectedIds.contains(alarm.getId()));
             alarmSwitch.setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
-
-//            parent.findViewById(R.id.main_delete_header).setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
-//            parent.findViewById(R.id.toolbar).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
-//            parent.findViewById(R.id.addAlarmButton).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
         }
     }
 }

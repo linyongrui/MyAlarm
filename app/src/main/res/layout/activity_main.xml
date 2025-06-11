@@ -9,11 +9,33 @@
     android:background="@color/bg_gray"
     tools:context=".activity.MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_gray"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/bg_gray"
+            android:elevation="4dp"
+            app:contentInsetStartWithNavigation="10dp"
+            app:subtitle="@string/not_any_alarm_cn"
+            app:subtitleTextAppearance="@style/ToolbarSubtitleStyle"
+            app:title="闹钟"
+            app:titleTextAppearance="@style/ToolbarTitleStyle" />
+    </com.google.android.material.appbar.AppBarLayout>
+
     <LinearLayout
         android:id="@+id/main_delete_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/alarmRecyclerView"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="15dp"
@@ -48,28 +70,6 @@
             android:textColor="@color/colorPrimary"
             android:textSize="18sp" />
     </LinearLayout>
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/bg_gray"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@color/bg_gray"
-            android:elevation="4dp"
-            app:contentInsetStartWithNavigation="10dp"
-            app:subtitle="@string/not_any_alarm_cn"
-            app:subtitleTextAppearance="@style/ToolbarSubtitleStyle"
-            app:title="闹钟"
-            app:titleTextAppearance="@style/ToolbarTitleStyle" />
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmRecyclerView"

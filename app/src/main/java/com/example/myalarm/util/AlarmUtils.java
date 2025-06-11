@@ -14,6 +14,7 @@ import com.example.myalarm.alarmtype.HolidayAlarmType;
 import com.example.myalarm.alarmtype.OnceAlarmType;
 import com.example.myalarm.alarmtype.WeekAlarmType;
 import com.example.myalarm.alarmtype.WorkingDayAlarmType;
+import com.example.myalarm.dao.AlarmDao;
 import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.receiver.AlarmReceiver;
@@ -28,6 +29,9 @@ import java.util.List;
 import java.util.Set;
 
 public class AlarmUtils {
+    static AlarmDao alarmDao = DatabaseClient.getInstance()
+            .getAlarmEntityDatabase()
+            .alarmDao();
 
     public static boolean isWorkingDay(LocalDate date) {
 
@@ -279,10 +283,7 @@ public class AlarmUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                long id = DatabaseClient.getInstance()
-                        .getAlarmEntityDatabase()
-                        .alarmDao()
-                        .insertAlarmEntity(newAlarmEntity);
+                long id = alarmDao.insertAlarmEntity(newAlarmEntity);
                 newAlarmEntity.setId(id);
                 Log.i("terry", "saveAlarm" + newAlarmEntity.getId());
                 setAlarm(context, newAlarmEntity);
@@ -303,6 +304,18 @@ public class AlarmUtils {
                 if (enabled) {
                     setAlarm(context, alarmEntity);
                 } else {
+                    cancelAlarm(context, (int) alarmId);
+                }
+            }
+        }).start();
+    }
+
+    public static void deleteAlarmsByIds(Context context, Set<Long> ids) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (long alarmId : ids) {
+                    alarmDao.deleteById(alarmId);
                     cancelAlarm(context, (int) alarmId);
                 }
             }

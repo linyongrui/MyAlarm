@@ -37,6 +37,10 @@ public class AlarmViewModel extends ViewModel {
         return multiSelectMode;
     }
 
+    public void setMultiSelectMode(boolean value) {
+        multiSelectMode.setValue(value);
+    }
+
     public void startCountdownTo() {
         stopTimer();
 
