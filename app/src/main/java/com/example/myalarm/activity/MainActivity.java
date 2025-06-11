@@ -63,22 +63,46 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView alarmRecyclerView = findViewById(R.id.alarmRecyclerView);
         alarmRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         alarmAdapter = new AlarmAdapter();
+        alarmAdapter.setOnItemClickListener(alarm -> {
+            Intent intent = new Intent(this, NewAlarmActivity.class);
+            intent.putExtra("alarm_id", alarm.getId());
+            startActivity(intent);
+        });
         alarmRecyclerView.setAdapter(alarmAdapter);
 
         alarmViewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
-
         alarmViewModel.getAlarmList().observe(this, new Observer<List<AlarmEntity>>() {
             @Override
             public void onChanged(List<AlarmEntity> alarmEntities) {
                 alarmAdapter.submitList(alarmEntities);
             }
         });
-
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         alarmViewModel.startCountdownTo();
         alarmViewModel.getTimeLeft().observe(this, timeLeft -> {
             if (timeLeft != null) {
                 toolbar.setSubtitle(timeLeft);
+            }
+        });
+
+        alarmViewModel.getMultiSelectMode().observe(this, multiSelectMode -> {
+            findViewById(R.id.main_delete_header).setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
+            findViewById(R.id.toolbar).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
+            findViewById(R.id.addAlarmButton).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
+        });
+
+        findViewById(R.id.main_btn_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alarmAdapter.setMultiSelectMode(false);
+            }
+        });
+        findViewById(R.id.main_btn_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Set<Long> ids = alarmAdapter.getSelectedIds();
+//                alarmViewModel.deleteAlarmsByIds(ids);
+                alarmAdapter.setMultiSelectMode(false);
             }
         });
 

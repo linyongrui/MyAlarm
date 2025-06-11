@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyAlarm</string>
+    <string name="app_name">我的闹钟</string>
     <string name="not_any_alarm_cn">还没有闹钟，请点击下方 + 新建闹钟</string>
     <string name="btn_cancel_cn">取消</string>
     <string name="new_alarm_cn">新建闹钟</string>

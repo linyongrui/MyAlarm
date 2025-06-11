@@ -14,7 +14,8 @@ import java.util.TimerTask;
 
 public class AlarmViewModel extends ViewModel {
     private final LiveData<List<AlarmEntity>> alarmList;
-    private final MutableLiveData<String> TimeLeft = new MutableLiveData<>();
+    private final MutableLiveData<String> timeLeft = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> multiSelectMode = new MutableLiveData<>();
     private Timer timer;
 
     public AlarmViewModel() {
@@ -29,7 +30,11 @@ public class AlarmViewModel extends ViewModel {
     }
 
     public LiveData<String> getTimeLeft() {
-        return TimeLeft;
+        return timeLeft;
+    }
+
+    public LiveData<Boolean> getMultiSelectMode() {
+        return multiSelectMode;
     }
 
     public void startCountdownTo() {
@@ -40,7 +45,7 @@ public class AlarmViewModel extends ViewModel {
             @Override
             public void run() {
                 String timeLeftStr = AlarmUtils.getNextTriggerTimeLeft(alarmList.getValue());
-                TimeLeft.postValue(timeLeftStr);
+                timeLeft.postValue(timeLeftStr);
             }
         }, 500, 60 * 1000);
     }

@@ -45,5 +45,15 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:theme="@style/CustomSwitchStyle" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="gone" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

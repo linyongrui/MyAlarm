@@ -9,6 +9,46 @@
     android:background="@color/bg_gray"
     tools:context=".activity.MainActivity">
 
+    <LinearLayout
+        android:id="@+id/main_delete_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alarmRecyclerView"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/main_btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="@string/btn_cancel_cn"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_new_alarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="删除闹钟"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/main_btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="删除"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+    </LinearLayout>
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,5 +94,4 @@
         app:elevation="6dp"
         app:fabSize="auto"
         app:rippleColor="@color/gray" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
