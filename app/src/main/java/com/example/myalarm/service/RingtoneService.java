@@ -35,7 +35,6 @@ public class RingtoneService extends Service {
         Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0.01F, 0.01F);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -73,6 +72,7 @@ public class RingtoneService extends Service {
         Intent fullScreenIntent = new Intent(this, AlarmRingActivity.class);
         fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        fullScreenIntent.putExtra("alarmName", intent.getStringExtra("alarmName"));
 
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(
                 this, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -89,6 +89,9 @@ public class RingtoneService extends Service {
                 .build();
 
         startForeground(1, notification);
+
+        float ringtoneVolume = (float) intent.getIntExtra("ringtoneProgress", 100) /100;
+        mediaPlayer.setVolume(ringtoneVolume, ringtoneVolume);
 
         mediaPlayer.start();
         startActivity(fullScreenIntent);

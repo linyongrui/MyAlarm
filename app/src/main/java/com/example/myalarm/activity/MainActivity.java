@@ -120,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void holidaysInit() {
-        Log.i("terry", "holidaysInit");
-
         LocalDate today = LocalDate.now();
         int thisYear = today.getYear();
         int nextYear = thisYear + 1;
@@ -146,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 List<HolidayEntity> holidayEntities = holidayDao.getHolidaysByYear(year);
-                Log.i("terry", year + " holidayEntity size: " + holidayEntities.size());
                 if (holidayEntities.isEmpty()) {
                     OkHttpClient client = new OkHttpClient();
                     Request request = new Request.Builder()
@@ -183,11 +180,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (PermissionUtils.grantResultCheck(grantResults)) {
-            Log.d("terry", "grant successed.");
-        } else {
+        if (!PermissionUtils.grantResultCheck(grantResults)) {
             Toast.makeText(getApplicationContext(), "通知权限被拒绝，无法设置使用闹钟", Toast.LENGTH_SHORT).show();
-            Log.d("terry", "grant failed.");
             PermissionUtils.jumpToPermissionGrant(this, Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         }
     }

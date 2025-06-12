@@ -8,11 +8,17 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myalarm.R;
 import com.example.myalarm.service.RingtoneService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class AlarmRingActivity extends AppCompatActivity {
 
@@ -40,7 +46,18 @@ public class AlarmRingActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_ring);
 
-        Button stopButton = findViewById(R.id.stopButton);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M月d日 E", Locale.CHINA);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        TextView ringTimeText = findViewById(R.id.ring_time_text);
+        ringTimeText.setText(LocalTime.now().format(timeFormatter));
+        TextView ringDateText = findViewById(R.id.ring_date_text);
+        ringDateText.setText(LocalDate.now().format(dateFormatter));
+
+        TextView alarmLabel = findViewById(R.id.ring_alarm_label);
+        String alarmName = getIntent().getStringExtra("alarmName");
+        alarmLabel.setText(alarmName == null || alarmName.isBlank() ? "闹钟" : alarmName);
+
+        Button stopButton = findViewById(R.id.ring_stop_button);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

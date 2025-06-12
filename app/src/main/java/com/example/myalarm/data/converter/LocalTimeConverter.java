@@ -3,12 +3,14 @@ package com.example.myalarm.data.converter;
 import androidx.room.TypeConverter;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class LocalTimeConverter {
 
     @TypeConverter
     public static String fromLocalTime(LocalTime time) {
-        return time == null ? null : time.toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return time == null ? null : time.format(formatter);
     }
 
     @TypeConverter

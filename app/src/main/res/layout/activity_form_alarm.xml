@@ -260,21 +260,86 @@
                 android:hint="闹钟名称"
                 android:paddingTop="16dp" />
 
-            <TextView
-                android:id="@+id/tv_ringtone"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:text="铃声：默认铃声"
-                android:textSize="16sp" />
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="0dp">
 
-            <TextView
-                android:id="@+id/tv_vibration"
+                <TextView
+                    android:id="@+id/tv_ringtone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="铃声:"
+                    android:textSize="16sp" />
+
+                <SeekBar
+                    android:id="@+id/sb_ringtone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_weight="98"
+                    android:max="100"
+                    android:padding="0dp"
+                    android:progressBackgroundTint="@color/gray"
+                    android:progressTint="@color/colorPrimary"
+                    android:thumbTint="@color/colorPrimary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/iv_ringtone_silent"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="invisible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="铃声:"
+                    android:textSize="16sp"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_lock_silent_mode" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="98"
+                    android:text=""
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:text="振动：默认振动"
-                android:textSize="16sp" />
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="0dp">
+
+                <TextView
+                    android:id="@+id/tv_vibration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="振动：默认振动"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_vibration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_snooze"

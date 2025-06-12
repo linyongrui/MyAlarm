@@ -87,8 +87,6 @@ public class HolidayUtils {
                 }
             }
         }
-//        Log.i("terry", "transferWorkdaySet size:" + transferWorkdaySet.size());
-        Log.i("terry", "yearInitialized:" + yearInitialized);
         return yearInitialized;
     }
 }

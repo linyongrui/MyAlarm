@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey;
 import com.example.myalarm.alarmtype.BaseAlarmType;
 
 import java.time.LocalTime;
-import java.util.Objects;
 
 @Entity(tableName = "alarmEntity")
 public class AlarmEntity {
@@ -16,14 +15,16 @@ public class AlarmEntity {
     private String name;
     private BaseAlarmType baseAlarmType;
     private LocalTime time;
+    private int ringtoneProgress;
     private boolean enabled;
 
-    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time) {
+    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress) {
         this.name = name;
         this.baseAlarmType = baseAlarmType;
         this.time = time;
         this.enabled = true;
-        if(this.time != null) {
+        this.ringtoneProgress = ringtoneProgress;
+        if (this.time != null) {
             this.time.withSecond(0).withNano(0);
         }
     }
@@ -59,7 +60,7 @@ public class AlarmEntity {
     public void setTime(LocalTime time) {
         this.time = time;
 
-        if(this.time != null) {
+        if (this.time != null) {
             this.time.withSecond(0).withNano(0);
         }
     }
@@ -76,15 +77,11 @@ public class AlarmEntity {
         return this.baseAlarmType.getRepeatDesc();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        AlarmEntity that = (AlarmEntity) o;
-        return id == that.id && enabled == that.enabled && Objects.equals(name, that.name) && Objects.equals(baseAlarmType, that.baseAlarmType) && Objects.equals(time, that.time);
+    public int getRingtoneProgress() {
+        return ringtoneProgress;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, baseAlarmType, time, enabled);
+    public void setRingtoneProgress(int ringtoneProgress) {
+        this.ringtoneProgress = ringtoneProgress;
     }
 }

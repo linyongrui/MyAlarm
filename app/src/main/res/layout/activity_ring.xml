@@ -1,30 +1,67 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_ring"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".activity.AlarmRingActivity">
+    android:background="@drawable/alarm_shade_bg"
+    android:padding="16dp">
 
+    <!-- 顶部时间显示 -->
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/ring_time_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="该起床啦"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="08:00"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="30dp"
+        android:textSize="80sp" />
+
+    <!-- 日期显示 -->
+    <TextView
+        android:id="@+id/ring_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ring_time_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="10月10日 星期四"
+        android:textColor="#CCCCCC"
+        android:textSize="20sp" />
+
+    <!-- 闹钟标题 -->
+    <TextView
+        android:id="@+id/ring_alarm_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="闹钟"
+        android:textColor="#FFFFFF"
         android:textSize="30sp" />
 
-    <AnalogClock
-        android:id="@+id/analogClock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <Button
-        android:id="@+id/stopButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="关闭" />
+        android:id="@+id/ring_stop_button"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/ring_alarm_label"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:foregroundTint="#FFFFFF"
+        android:text="关闭闹钟"
+        android:textSize="20sp" />
 
-</LinearLayout>
+    <!-- 关闭闹钟提示文字 -->
+    <TextView
+        android:id="@+id/ring_dismiss_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:text="上滑5分钟后提醒"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+</RelativeLayout>

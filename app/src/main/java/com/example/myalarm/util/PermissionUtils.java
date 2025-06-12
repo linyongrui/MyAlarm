@@ -90,11 +90,9 @@ public class PermissionUtils {
             if (!Settings.canDrawOverlays(context)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + context.getPackageName()));
-                Log.i("terry", "overlayPermissionCheck");
                 mDrawOverAppsLauncher.launch(intent);
             } else {
                 if (resource != null) {
-                    Log.i("terry", "overlayPermissionCheck2");
                     view = showFloatingWindow(context, resource);
                 }
             }

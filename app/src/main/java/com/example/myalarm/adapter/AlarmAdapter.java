@@ -18,6 +18,7 @@ import com.example.myalarm.R;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -97,7 +98,8 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
         AlarmEntity alarmEntity = getItem(position);
         holder.bind(alarmEntity);
-        String timeStr = alarmEntity.getTime().toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String timeStr = alarmEntity.getTime().format(formatter);
         holder.timeTextView.setText(timeStr);
         holder.repeatTextView.setText(alarmEntity.getRepeatStr());
 

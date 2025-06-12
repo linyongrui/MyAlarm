@@ -109,7 +109,6 @@ public class AlarmUtils {
 
             count++;
         } while ((isNextTriggerDateT1Get && count < 7) || (!isNextTriggerDateT1Get && count < 365));
-        Log.i("terry", "count：" + count);
 
         if (nextTriggerDateT1 != null && nextTriggerDateT2 != null) {
             nextTriggerDate = nextTriggerDateT1.isBefore(nextTriggerDateT2) ? nextTriggerDateT1 : nextTriggerDateT2;
@@ -250,10 +249,8 @@ public class AlarmUtils {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("alarmId", alarm.getId());
-        intent.putExtra("name", alarm.getName());
-        intent.putExtra("triggerTime", triggerTime);
-        intent.putExtra("alarmType", alarm.getBaseAlarmType().getType());
-        intent.putExtra("repeatDesc", alarm.getBaseAlarmType().getRepeatDesc());
+        intent.putExtra("alarmName", alarm.getName());
+        intent.putExtra("ringtoneProgress", alarm.getRingtoneProgress());
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -263,7 +260,6 @@ public class AlarmUtils {
         );
 
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        Log.i("terry", "setAlarm" + alarm.getId());
     }
 
     public static void cancelAlarm(Context context, int alarmId) {
@@ -276,7 +272,6 @@ public class AlarmUtils {
                 PendingIntent.FLAG_IMMUTABLE
         );
         alarmManager.cancel(pendingIntent);
-        Log.i("terry", "cancelAlarm" + alarmId);
     }
 
     public static void saveAlarm(Context context, AlarmEntity newAlarmEntity) {
@@ -285,7 +280,6 @@ public class AlarmUtils {
             public void run() {
                 long id = alarmDao.insertAlarmEntity(newAlarmEntity);
                 newAlarmEntity.setId(id);
-                Log.i("terry", "saveAlarm" + newAlarmEntity.getId());
                 setAlarm(context, newAlarmEntity);
             }
         }).start();

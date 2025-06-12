@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -64,7 +65,9 @@ public class AlarmFormActivity extends AppCompatActivity {
     private Switch skipWorkingDaysSwitch;
     private Switch skipHolidaysSwitch;
     private EditText alarmNameEditText;
-    private TextView ringtoneTextView, vibrationTextView, snoozeTextView;
+    private SeekBar ringtoneSeekBar;
+    private LinearLayout ringtoneSilent;
+    private TextView vibrationTextView, snoozeTextView;
 
     private void populateUiWithAlarm(AlarmEntity originalAlarm) {
         TextView tvFormAlarmTitle = findViewById(R.id.tv_form_alarm_title);
@@ -92,9 +95,10 @@ public class AlarmFormActivity extends AppCompatActivity {
         skipWorkingDaysSwitch.setChecked(originalBaseAlarmType.getSkipWorkingDay());
         skipHolidaysSwitch.setChecked(originalBaseAlarmType.getSkipHoliday());
         alarmNameEditText.setText(originalAlarm.getName());
+        ringtoneSeekBar.setProgress(originalAlarm.getRingtoneProgress());
     }
 
-    @SuppressLint("ResourceAsColor")
+    @SuppressLint({"ResourceAsColor", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -204,7 +208,31 @@ public class AlarmFormActivity extends AppCompatActivity {
         });
 
         alarmNameEditText = findViewById(R.id.et_alarm_name);
-        ringtoneTextView = findViewById(R.id.tv_ringtone);
+
+        ringtoneSilent = findViewById(R.id.iv_ringtone_silent);
+        ringtoneSeekBar = findViewById(R.id.sb_ringtone);
+        ringtoneSeekBar.setProgress(80);
+        ringtoneSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (progress == 0) {
+                    ringtoneSilent.setVisibility(View.VISIBLE);
+                } else {
+                    ringtoneSilent.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // 用户开始拖动 SeekBar（可选）
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // 用户松手时调用（可选）
+            }
+        });
+
         vibrationTextView = findViewById(R.id.tv_vibration);
         snoozeTextView = findViewById(R.id.tv_snooze);
     }
@@ -327,8 +355,9 @@ public class AlarmFormActivity extends AppCompatActivity {
         baseAlarmType.setSkipWorkingDay(skipWorkingDaysSwitch.isChecked());
         baseAlarmType.setSkipHoliday(skipHolidaysSwitch.isChecked());
         String alarmName = alarmNameEditText.getText().toString();
+        int ringtoneProgress = ringtoneSeekBar.getProgress();
 
-        return new AlarmEntity(alarmName, baseAlarmType, time);
+        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress);
     }
 
     private class SpinnerOption {
