@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView alarmRecyclerView = findViewById(R.id.alarmRecyclerView);
         alarmRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         alarmAdapter = new AlarmAdapter();
-        alarmAdapter.setOnItemClickListener(alarm -> {
-            Intent intent = new Intent(this, NewAlarmActivity.class);
-            intent.putExtra("alarm_id", alarm.getId());
+        alarmAdapter.setOnItemClickListener(alarmEntity -> {
+            Intent intent = new Intent(this, AlarmFormActivity.class);
+            intent.putExtra("alarm_id", alarmEntity.getId());
             startActivity(intent);
         });
         alarmRecyclerView.setAdapter(alarmAdapter);
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 holidaysInit();
                 permissionCheck();
-                startActivity(new Intent(MainActivity.this, NewAlarmActivity.class));
+                startActivity(new Intent(MainActivity.this, AlarmFormActivity.class));
             }
         });
     }

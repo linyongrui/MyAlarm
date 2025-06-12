@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.NewAlarmActivity"
+            android:name=".activity.AlarmFormActivity"
             android:exported="false" />
         <activity
             android:name=".activity.AlarmRingActivity"

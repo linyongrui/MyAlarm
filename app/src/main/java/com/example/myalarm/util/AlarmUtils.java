@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 public class AlarmUtils {
-    static AlarmDao alarmDao = DatabaseClient.getInstance()
+    public static AlarmDao alarmDao = DatabaseClient.getInstance()
             .getAlarmEntityDatabase()
             .alarmDao();
 
@@ -297,15 +297,23 @@ public class AlarmUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                DatabaseClient.getInstance()
-                        .getAlarmEntityDatabase()
-                        .alarmDao()
-                        .updateAlarmEnabled(alarmId, enabled);
+                alarmDao.updateAlarmEnabled(alarmId, enabled);
                 if (enabled) {
                     setAlarm(context, alarmEntity);
                 } else {
                     cancelAlarm(context, (int) alarmId);
                 }
+            }
+        }).start();
+    }
+
+    public static void updateAlarm(Context context, AlarmEntity alarmEntity) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                alarmDao.updateAlarmEntity(alarmEntity);
+                cancelAlarm(context, (int) alarmEntity.getId());
+                setAlarm(context, alarmEntity);
             }
         }).start();
     }

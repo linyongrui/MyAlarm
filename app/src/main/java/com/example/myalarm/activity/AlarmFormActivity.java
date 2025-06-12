@@ -18,6 +18,7 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myalarm.R;
 import com.example.myalarm.alarmtype.BaseAlarmType;
@@ -30,12 +31,14 @@ import com.example.myalarm.alarmtype.WorkingDayAlarmType;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
 import com.example.myalarm.util.PermissionUtils;
+import com.example.myalarm.viewmodel.AlarmViewModel;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class NewAlarmActivity extends AppCompatActivity {
+public class AlarmFormActivity extends AppCompatActivity {
 
     private static final List<SpinnerOption> alarmTypeList = new ArrayList<>();
 
@@ -49,6 +52,9 @@ public class NewAlarmActivity extends AppCompatActivity {
         alarmTypeList.add(new SpinnerOption(DateAlarmType.ALARM_TYPE, "按日期"));
     }
 
+    private AlarmViewModel viewModel;
+    private AlarmEntity currentAlarm = null;
+
     private TimePicker timePicker;
     private Spinner ringRuleSpinner;
     private TextView repeatDatesTextView;
@@ -60,11 +66,48 @@ public class NewAlarmActivity extends AppCompatActivity {
     private EditText alarmNameEditText;
     private TextView ringtoneTextView, vibrationTextView, snoozeTextView;
 
+    private void populateUiWithAlarm(AlarmEntity originalAlarm) {
+        TextView tvFormAlarmTitle = findViewById(R.id.tv_form_alarm_title);
+        tvFormAlarmTitle.setText("编辑闹钟");
+        LocalTime time = originalAlarm.getTime();
+        timePicker.setHour(time.getHour());
+        timePicker.setMinute(time.getMinute());
+
+        BaseAlarmType originalBaseAlarmType = originalAlarm.getBaseAlarmType();
+
+        ArrayAdapter<SpinnerOption> adapter = (ArrayAdapter<SpinnerOption>) ringRuleSpinner.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).getOptionId().equals(originalBaseAlarmType.getType())) {
+                ringRuleSpinner.setSelection(i);
+                break;
+            }
+        }
+        if (Objects.equals(originalBaseAlarmType.getType(), WeekAlarmType.ALARM_TYPE)) {
+            WeekAlarmType originalWeekAlarmType = (WeekAlarmType) originalBaseAlarmType;
+            int[] weekDayCheck = originalWeekAlarmType.getWeekDayCheck();
+            for (int i = 0; i < dayButtons.length; i++) {
+                dayButtons[i].setChecked(weekDayCheck[i] == 1);
+            }
+        }
+        skipWorkingDaysSwitch.setChecked(originalBaseAlarmType.getSkipWorkingDay());
+        skipHolidaysSwitch.setChecked(originalBaseAlarmType.getSkipHoliday());
+        alarmNameEditText.setText(originalAlarm.getName());
+    }
+
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_alarm);
+        setContentView(R.layout.activity_form_alarm);
+
+        long alarmId = getIntent().getLongExtra("alarm_id", -1);
+        viewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
+        viewModel.getAlarmById(alarmId).observe(this, originalAlarm -> {
+            if (originalAlarm != null) {
+                currentAlarm = originalAlarm;
+                populateUiWithAlarm(originalAlarm);
+            }
+        });
 
         Context context = getApplicationContext();
         PermissionUtils.overlayPermissionCheck(this);
@@ -236,7 +279,12 @@ public class NewAlarmActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                AlarmUtils.saveAlarm(getApplicationContext(), newAlarmEntity);
+                if (currentAlarm == null) {
+                    AlarmUtils.saveAlarm(getApplicationContext(), newAlarmEntity);
+                } else {
+                    newAlarmEntity.setId(currentAlarm.getId());
+                    AlarmUtils.updateAlarm(getApplicationContext(), newAlarmEntity);
+                }
                 finish();
             }
         }).start();

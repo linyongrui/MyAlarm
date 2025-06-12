@@ -18,6 +18,9 @@ public interface AlarmDao {
     @Query("SELECT * FROM AlarmEntity ORDER BY time ASC")
     List<AlarmEntity> getAllActiveAlarms();
 
+    @Query("SELECT * FROM AlarmEntity where id=:id")
+    LiveData<AlarmEntity> getAlarmEntityById(long id);
+
     @Insert
     long insertAlarmEntity(AlarmEntity alarmEntity);
 

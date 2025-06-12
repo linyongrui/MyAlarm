@@ -1,10 +1,11 @@
 package com.example.myalarm.viewmodel;
 
+import static com.example.myalarm.util.AlarmUtils.alarmDao;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
 
@@ -19,7 +20,7 @@ public class AlarmViewModel extends ViewModel {
     private Timer timer;
 
     public AlarmViewModel() {
-        alarmList = DatabaseClient.getInstance().getAlarmEntityDatabase().alarmDao().getAllAlarms();
+        alarmList = alarmDao.getAllAlarms();
         alarmList.observeForever(alarms -> {
             startCountdownTo();
         });
@@ -65,5 +66,9 @@ public class AlarmViewModel extends ViewModel {
     protected void onCleared() {
         stopTimer();
         super.onCleared();
+    }
+
+    public LiveData<AlarmEntity> getAlarmById(long id) {
+        return alarmDao.getAlarmEntityById(id);
     }
 }
