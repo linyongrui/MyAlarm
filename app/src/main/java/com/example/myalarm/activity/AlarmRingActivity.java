@@ -4,6 +4,7 @@ import android.app.KeyguardManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,6 +22,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class AlarmRingActivity extends AppCompatActivity {
+
+    private Button stopButton;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class AlarmRingActivity extends AppCompatActivity {
         String alarmName = getIntent().getStringExtra("alarmName");
         alarmLabel.setText(alarmName == null || alarmName.isBlank() ? "闹钟" : alarmName);
 
-        Button stopButton = findViewById(R.id.ring_stop_button);
+        stopButton = findViewById(R.id.ring_stop_button);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,5 +70,31 @@ public class AlarmRingActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        startAutoStopTimer();
+    }
+
+    private void startAutoStopTimer() {
+        countDownTimer = new CountDownTimer(2 * 60 * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // 可在此处更新UI显示倒计时，暂未实现
+            }
+
+            @Override
+            public void onFinish() {
+                if (stopButton != null) {
+                    stopButton.callOnClick();
+                }
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
     }
 }

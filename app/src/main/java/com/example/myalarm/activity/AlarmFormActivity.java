@@ -211,7 +211,7 @@ public class AlarmFormActivity extends AppCompatActivity {
 
         ringtoneSilent = findViewById(R.id.iv_ringtone_silent);
         ringtoneSeekBar = findViewById(R.id.sb_ringtone);
-        ringtoneSeekBar.setProgress(80);
+        ringtoneSeekBar.setProgress(100);
         ringtoneSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

@@ -19,6 +19,7 @@ import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.receiver.AlarmReceiver;
 
+import java.security.SecureRandom;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -251,10 +252,10 @@ public class AlarmUtils {
         intent.putExtra("alarmId", alarm.getId());
         intent.putExtra("alarmName", alarm.getName());
         intent.putExtra("ringtoneProgress", alarm.getRingtoneProgress());
-
+        SecureRandom secureRandom = new SecureRandom();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
-                (int) alarm.getId(),
+                (int) (alarm.getId() * 1000 + secureRandom.nextInt(1000)),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
         );
