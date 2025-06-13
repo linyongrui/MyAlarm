@@ -69,6 +69,6 @@ public class AlarmViewModel extends ViewModel {
     }
 
     public LiveData<AlarmEntity> getAlarmById(long id) {
-        return alarmDao.getAlarmEntityById(id);
+        return alarmDao.getAlarmById(id);
     }
 }

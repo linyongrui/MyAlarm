@@ -15,11 +15,14 @@ public interface AlarmDao {
     @Query("SELECT * FROM AlarmEntity ORDER BY time ASC")
     LiveData<List<AlarmEntity>> getAllAlarms();
 
+    @Query("SELECT * FROM AlarmEntity where id=:id")
+    LiveData<AlarmEntity> getAlarmById(long id);
+
     @Query("SELECT * FROM AlarmEntity where enabled=true ORDER BY time ASC")
     List<AlarmEntity> getAllActiveAlarms();
 
     @Query("SELECT * FROM AlarmEntity where id=:id")
-    LiveData<AlarmEntity> getAlarmEntityById(long id);
+    AlarmEntity getActiveAlarmById(long id);
 
     @Insert
     long insertAlarmEntity(AlarmEntity alarmEntity);
@@ -31,5 +34,5 @@ public interface AlarmDao {
     void updateAlarmEntity(AlarmEntity alarmEntity);
 
     @Query("DELETE FROM AlarmEntity WHERE ID=:alarmId")
-    void deleteById(long alarmId);
+    void deleteAlarmById(long alarmId);
 }

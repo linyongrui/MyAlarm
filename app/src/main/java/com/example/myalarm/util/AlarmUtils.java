@@ -108,7 +108,7 @@ public class AlarmUtils {
             nextTriggerDateCursor = nextTriggerDateCursor.plusDays(1L);
 
             count++;
-        } while ((isNextTriggerDateT1Get && count < 7) || (!isNextTriggerDateT1Get && count < 365));
+        } while ((isNextTriggerDateT1Get && count < 7) || (!isNextTriggerDateT1Get && count < 366));
 
         if (nextTriggerDateT1 != null && nextTriggerDateT2 != null) {
             nextTriggerDate = nextTriggerDateT1.isBefore(nextTriggerDateT2) ? nextTriggerDateT1 : nextTriggerDateT2;
@@ -320,8 +320,24 @@ public class AlarmUtils {
             @Override
             public void run() {
                 for (long alarmId : ids) {
-                    alarmDao.deleteById(alarmId);
+                    alarmDao.deleteAlarmById(alarmId);
                     cancelAlarm(context, (int) alarmId);
+                }
+            }
+        }).start();
+    }
+
+    public static void setNextAlarm(Context context, long alarmId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AlarmEntity alarmEntity = alarmDao.getActiveAlarmById(alarmId);
+                String alarmType = alarmEntity == null ? null : alarmEntity.getBaseAlarmType().getType();
+                if (!OnceAlarmType.ALARM_TYPE.equals(alarmType)) {
+                    int newRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), true);
+                    alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
+                    alarmDao.updateAlarmEntity(alarmEntity);
+                    setAlarm(context, alarmEntity, newRequestCode);
                 }
             }
         }).start();
