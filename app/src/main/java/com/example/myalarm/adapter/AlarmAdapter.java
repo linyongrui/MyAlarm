@@ -1,6 +1,9 @@
 package com.example.myalarm.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -108,11 +112,12 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         holder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                alarmEntity.setEnabled(isChecked);
-                String status = isChecked ? "启用" : "禁用";
-                String message = "闹钟 " + timeStr + " 已" + status;
-                android.widget.Toast.makeText(buttonView.getContext(), message, android.widget.Toast.LENGTH_SHORT).show();
-                AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
+                if (isChecked) {
+                    alarmEntity.setEnabled(true);
+                    AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
+                } else {
+                    showConfirmationDialog(holder.alarmSwitch, alarmEntity);
+                }
             }
         });
     }
@@ -160,5 +165,52 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             checkBox.setChecked(selectedIds.contains(alarm.getId()));
             alarmSwitch.setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
         }
+    }
+
+    private String alertDialogDismissByWho = null;
+
+    private void showConfirmationDialog(Switch alarmSwitch, AlarmEntity alarmEntity) {
+        alertDialogDismissByWho = null;
+        Context context = alarmSwitch.getContext();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("要关闭此重复闹钟吗？")
+                .setPositiveButton("仅明天关闭一次", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "仅明天关闭一次闹钟", Toast.LENGTH_SHORT).show();
+                        alertDialogDismissByWho = "once";
+                        alarmEntity.setEnabled(false);
+                        alarmSwitch.setChecked(false);
+                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
+                    }
+                })
+                .setNegativeButton("关闭此重复闹钟", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "关闭此重复闹钟", Toast.LENGTH_SHORT).show();
+                        alertDialogDismissByWho = "close";
+                        alarmEntity.setEnabled(false);
+                        alarmSwitch.setChecked(false);
+                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
+                    }
+                })
+                .setNeutralButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertDialogDismissByWho = "cancel";
+                        alarmEntity.setEnabled(true);
+                        alarmSwitch.setChecked(true);
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (alertDialogDismissByWho == null) {
+                            alarmEntity.setEnabled(true);
+                            alarmSwitch.setChecked(true);
+                        }
+                    }
+                })
+                .show();
     }
 }
