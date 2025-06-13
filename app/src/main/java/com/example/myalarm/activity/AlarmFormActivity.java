@@ -311,6 +311,8 @@ public class AlarmFormActivity extends AppCompatActivity {
                     AlarmUtils.saveAlarm(getApplicationContext(), newAlarmEntity);
                 } else {
                     newAlarmEntity.setId(currentAlarm.getId());
+                    newAlarmEntity.setEnabled(true);
+                    newAlarmEntity.setRequestCodeSeq(currentAlarm.getRequestCodeSeq());
                     AlarmUtils.updateAlarm(getApplicationContext(), newAlarmEntity);
                 }
                 finish();

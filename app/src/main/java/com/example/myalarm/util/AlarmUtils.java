@@ -19,7 +19,6 @@ import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.receiver.AlarmReceiver;
 
-import java.security.SecureRandom;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -245,30 +244,28 @@ public class AlarmUtils {
         return nextTriggerTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    public static void setAlarm(Context context, AlarmEntity alarm) {
+    public static void setAlarm(Context context, AlarmEntity alarm, int requestCode) {
         long triggerTime = getNextTriggerTime(alarm);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("alarmId", alarm.getId());
         intent.putExtra("alarmName", alarm.getName());
         intent.putExtra("ringtoneProgress", alarm.getRingtoneProgress());
-        SecureRandom secureRandom = new SecureRandom();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
-                (int) (alarm.getId() * 1000 + secureRandom.nextInt(1000)),
+                requestCode,
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
         );
-
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
     }
 
-    public static void cancelAlarm(Context context, int alarmId) {
+    public static void cancelAlarm(Context context, int requestCode) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
-                alarmId,
+                requestCode,
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
         );
@@ -281,22 +278,23 @@ public class AlarmUtils {
             public void run() {
                 long id = alarmDao.insertAlarmEntity(newAlarmEntity);
                 newAlarmEntity.setId(id);
-                setAlarm(context, newAlarmEntity);
+                setAlarm(context, newAlarmEntity, (int) id * 10);
             }
         }).start();
     }
 
     public static void updateAlarmEnabled(Context context, AlarmEntity alarmEntity) {
-        long alarmId = alarmEntity.getId();
-        boolean enabled = alarmEntity.isEnabled();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                long alarmId = alarmEntity.getId();
+                boolean enabled = alarmEntity.isEnabled();
+                int originalRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), false);
                 alarmDao.updateAlarmEnabled(alarmId, enabled);
                 if (enabled) {
-                    setAlarm(context, alarmEntity);
+                    setAlarm(context, alarmEntity, originalRequestCode);
                 } else {
-                    cancelAlarm(context, (int) alarmId);
+                    cancelAlarm(context, originalRequestCode);
                 }
             }
         }).start();
@@ -306,9 +304,13 @@ public class AlarmUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
+                int newRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), true);
+
+                alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
                 alarmDao.updateAlarmEntity(alarmEntity);
-                cancelAlarm(context, (int) alarmEntity.getId());
-                setAlarm(context, alarmEntity);
+                cancelAlarm(context, originalRequestCode);
+                setAlarm(context, alarmEntity, newRequestCode);
             }
         }).start();
     }
@@ -323,5 +325,10 @@ public class AlarmUtils {
                 }
             }
         }).start();
+    }
+
+    public static int getRequestCode(long alarmId, int originalRequestCodeSeq, boolean isGenerateNew) {
+        int tempRequestCodeSeq = isGenerateNew ? originalRequestCodeSeq + 1 : originalRequestCodeSeq;
+        return (int) (alarmId * 10 + tempRequestCodeSeq % 10);
     }
 }

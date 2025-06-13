@@ -17,6 +17,7 @@ public class AlarmEntity {
     private LocalTime time;
     private int ringtoneProgress;
     private boolean enabled;
+    private int requestCodeSeq;
 
     public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress) {
         this.name = name;
@@ -83,5 +84,13 @@ public class AlarmEntity {
 
     public void setRingtoneProgress(int ringtoneProgress) {
         this.ringtoneProgress = ringtoneProgress;
+    }
+
+    public int getRequestCodeSeq() {
+        return requestCodeSeq;
+    }
+
+    public void setRequestCodeSeq(int requestCodeSeq) {
+        this.requestCodeSeq = requestCodeSeq;
     }
 }
