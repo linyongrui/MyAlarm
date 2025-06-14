@@ -14,7 +14,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:id="@+id/timeTextView"
@@ -22,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:textColor="@android:color/black"
-            android:textSize="30sp"
+            android:textSize="35sp"
             android:textStyle="bold" />
 
         <TextView
@@ -35,6 +38,27 @@
             android:paddingEnd="3dp"
             android:textColor="@android:color/darker_gray"
             android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/nextTriggerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/repeatTextView"
+            android:layout_alignParentStart="true"
+            android:paddingTop="3dp"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/alarmNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/timeTextView"
+            android:paddingStart="30dp"
+            android:paddingTop="9dp"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <Switch
             android:id="@+id/alarmSwitch"

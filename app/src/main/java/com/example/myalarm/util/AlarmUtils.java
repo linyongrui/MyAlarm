@@ -23,9 +23,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class AlarmUtils {
@@ -59,6 +60,20 @@ public class AlarmUtils {
         return null;
     }
 
+    public static LocalDate getNextTriggerDateForEveryDay(AlarmEntity alarmEntity) {
+        LocalDate dateFrom = LocalDate.now();
+        LocalTime timeFrom = LocalTime.now().withSecond(0).withNano(0);
+        if (alarmEntity.isTempDisabled()) {
+            LocalDateTime localDateTime = DateTimeUtils.long2LocalDateTime(alarmEntity.getNextTriggerTime());
+            dateFrom = localDateTime.toLocalDate();
+            timeFrom = localDateTime.toLocalTime();
+        }
+
+        LocalTime alarmTime = alarmEntity.getTime();
+        boolean isBeforeNow = !alarmTime.isAfter(timeFrom);
+        return isBeforeNow ? dateFrom.plusDays(1L) : dateFrom;
+    }
+
     public static LocalDate getNextTriggerDateForOnce(LocalTime alarmTime) {
         LocalDate today = LocalDate.now();
         LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
@@ -67,11 +82,16 @@ public class AlarmUtils {
     }
 
     public static LocalDate getNextTriggerDateForWeek(AlarmEntity alarmEntity) {
-        LocalDate nextTriggerDate = null;
+        LocalDate dateFrom = LocalDate.now();
+        LocalTime timeFrom = LocalTime.now().withSecond(0).withNano(0);
+        if (alarmEntity.isTempDisabled()) {
+            LocalDateTime localDateTime = DateTimeUtils.long2LocalDateTime(alarmEntity.getNextTriggerTime());
+            dateFrom = localDateTime.toLocalDate();
+            timeFrom = localDateTime.toLocalTime();
+        }
 
-        LocalDate today = LocalDate.now();
-        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
-        boolean isBeforeNow = !alarmEntity.getTime().isAfter(timeNow);
+        LocalDate nextTriggerDate = null;
+        boolean isBeforeNow = !alarmEntity.getTime().isAfter(timeFrom);
 
         WeekAlarmType weekAlarmType = (WeekAlarmType) alarmEntity.getBaseAlarmType();
         int[] weekCheck = weekAlarmType.getWeekDayCheck();
@@ -81,7 +101,7 @@ public class AlarmUtils {
             return null;
         }
 
-        int todayOfWeekNumber = today.getDayOfWeek().getValue();
+        int todayOfWeekNumber = dateFrom.getDayOfWeek().getValue();
         todayOfWeekNumber = todayOfWeekNumber == 7 ? 0 : todayOfWeekNumber;
         LocalDate nextTriggerDateCursor = LocalDate.now();
         LocalDate nextTriggerDateT1 = null;
@@ -97,7 +117,7 @@ public class AlarmUtils {
                 if (isSkipCheckPass) {
                     if (nextTriggerDateT1 == null) {
                         isNextTriggerDateT1Get = true;
-                        nextTriggerDateT1 = isBeforeNow && today.equals(nextTriggerDateCursor) ? nextTriggerDateCursor.plusDays(7L) : nextTriggerDateCursor;
+                        nextTriggerDateT1 = isBeforeNow && dateFrom.equals(nextTriggerDateCursor) ? nextTriggerDateCursor.plusDays(7L) : nextTriggerDateCursor;
                     } else if (nextTriggerDateT2 == null) {
                         nextTriggerDateT2 = nextTriggerDateCursor;
                         break;
@@ -118,13 +138,19 @@ public class AlarmUtils {
         return nextTriggerDate;
     }
 
-    public static LocalDate getNextTriggerDateForHoliday(LocalTime alarmTime) {
-        LocalDate today = LocalDate.now();
-        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
-        boolean isBeforeNow = !alarmTime.isAfter(timeNow);
+    public static LocalDate getNextTriggerDateForHoliday(AlarmEntity alarmEntity) {
+        LocalTime alarmTime = alarmEntity.getTime();
+        LocalDate dateFrom = LocalDate.now();
+        LocalTime timeFrom = LocalTime.now().withSecond(0).withNano(0);
+        if (alarmEntity.isTempDisabled()) {
+            LocalDateTime localDateTime = DateTimeUtils.long2LocalDateTime(alarmEntity.getNextTriggerTime());
+            dateFrom = localDateTime.toLocalDate();
+            timeFrom = localDateTime.toLocalTime();
+        }
+        boolean isBeforeNow = !alarmTime.isAfter(timeFrom);
 
         LocalDate nextTriggerDate = null;
-        LocalDate nextTriggerDateCursor = isBeforeNow ? today.plusDays(1L) : today;
+        LocalDate nextTriggerDateCursor = isBeforeNow ? dateFrom.plusDays(1L) : dateFrom;
         int count = 0;
         do {
             count++;
@@ -139,13 +165,19 @@ public class AlarmUtils {
         return nextTriggerDate;
     }
 
-    public static LocalDate getNextTriggerDateForWorkingDay(LocalTime alarmTime) {
-        LocalDate today = LocalDate.now();
-        LocalTime timeNow = LocalTime.now().withSecond(0).withNano(0);
-        boolean isBeforeNow = !alarmTime.isAfter(timeNow);
+    public static LocalDate getNextTriggerDateForWorkingDay(AlarmEntity alarmEntity) {
+        LocalTime alarmTime = alarmEntity.getTime();
+        LocalDate dateFrom = LocalDate.now();
+        LocalTime timeFrom = LocalTime.now().withSecond(0).withNano(0);
+        if (alarmEntity.isTempDisabled()) {
+            LocalDateTime localDateTime = DateTimeUtils.long2LocalDateTime(alarmEntity.getNextTriggerTime());
+            dateFrom = localDateTime.toLocalDate();
+            timeFrom = localDateTime.toLocalTime();
+        }
+        boolean isBeforeNow = !alarmTime.isAfter(timeFrom);
 
         LocalDate nextTriggerDate = null;
-        LocalDate nextTriggerDateCursor = isBeforeNow ? today.plusDays(1L) : today;
+        LocalDate nextTriggerDateCursor = isBeforeNow ? dateFrom.plusDays(1L) : dateFrom;
         int count = 0;
         do {
             count++;
@@ -168,6 +200,8 @@ public class AlarmUtils {
                 nextTriggerDate = getNextTriggerDateForDate(alarmEntity);
                 break;
             case EveryDayAlarmType.ALARM_TYPE:
+                nextTriggerDate = getNextTriggerDateForEveryDay(alarmEntity);
+                break;
             case OnceAlarmType.ALARM_TYPE:
                 nextTriggerDate = getNextTriggerDateForOnce(alarmEntity.getTime());
                 break;
@@ -175,10 +209,10 @@ public class AlarmUtils {
                 nextTriggerDate = getNextTriggerDateForWeek(alarmEntity);
                 break;
             case HolidayAlarmType.ALARM_TYPE:
-                nextTriggerDate = getNextTriggerDateForHoliday(alarmEntity.getTime());
+                nextTriggerDate = getNextTriggerDateForHoliday(alarmEntity);
                 break;
             case WorkingDayAlarmType.ALARM_TYPE:
-                nextTriggerDate = getNextTriggerDateForWorkingDay(alarmEntity.getTime());
+                nextTriggerDate = getNextTriggerDateForWorkingDay(alarmEntity);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown alarm type: " + baseAlarmType.getType());
@@ -207,30 +241,33 @@ public class AlarmUtils {
             return "还没有闹钟，请点击下方 + 新建闹钟";
         }
 
-        int[] minTimeLeft = null;
-        for (AlarmEntity alarmEntity : alarmEntities) {
-            if (alarmEntity.isEnabled()) {
-                int[] timeLeft = AlarmUtils.getNextTriggerTimeLeft(alarmEntity);
-                if (minTimeLeft == null || minTimeLeft[0] > timeLeft[0] || minTimeLeft[1] > timeLeft[1] || minTimeLeft[2] > timeLeft[2]) {
-                    minTimeLeft = timeLeft;
-                }
-            }
-        }
-        if (minTimeLeft == null) {
-            return "请开启已有的闹钟，或者点击下方 + 新建闹钟";
-        } else {
+        Optional<AlarmEntity> earlyAlarmEntity = alarmEntities.stream()
+                .filter(alarmEntity -> !alarmEntity.isDisabled())
+                .min(Comparator.comparingLong(AlarmEntity::getNextTriggerTime));
+        if (earlyAlarmEntity.isPresent()) {
+            long minNextTriggerTimeLong = earlyAlarmEntity.get().getNextTriggerTime();
+            LocalDateTime minNextTriggerTime = DateTimeUtils.long2LocalDateTime(minNextTriggerTimeLong);
+            LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
+
+            int days = (int) ChronoUnit.DAYS.between(now, minNextTriggerTime);
+            LocalDateTime adjustedDateTime1 = now.plusDays(days);
+            int hours = (int) ChronoUnit.HOURS.between(adjustedDateTime1, minNextTriggerTime);
+            LocalDateTime adjustedDateTime2 = adjustedDateTime1.plusHours(hours);
+            int minutes = (int) ChronoUnit.MINUTES.between(adjustedDateTime2, minNextTriggerTime);
             StringBuilder timeLeftBuilder = new StringBuilder();
             timeLeftBuilder.append("距离下次响铃还有");
-            if (minTimeLeft[0] > 0) {
-                timeLeftBuilder.append(minTimeLeft[0] + "天");
+            if (days > 0) {
+                timeLeftBuilder.append(days + "天");
             }
-            if (minTimeLeft[1] > 0) {
-                timeLeftBuilder.append(minTimeLeft[1] + "小时");
+            if (hours > 0) {
+                timeLeftBuilder.append(hours + "小时");
             }
-            if (minTimeLeft[2] > 0) {
-                timeLeftBuilder.append(minTimeLeft[2] + "分钟");
+            if (minutes > 0) {
+                timeLeftBuilder.append(minutes + "分钟");
             }
             return timeLeftBuilder.toString();
+        } else {
+            return "请开启已有的闹钟，或者点击下方 + 新建闹钟";
         }
     }
 
@@ -241,11 +278,10 @@ public class AlarmUtils {
         }
         LocalDateTime nextTriggerTime = LocalDateTime.of(nextTriggerDate, alarmEntity.getTime());
         Log.i("terry", "nextTriggerTime:" + nextTriggerTime);
-        return nextTriggerTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return DateTimeUtils.localDateTime2long(nextTriggerTime);
     }
 
     public static void setAlarm(Context context, AlarmEntity alarm, int requestCode) {
-        long triggerTime = getNextTriggerTime(alarm);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("alarmId", alarm.getId());
@@ -257,7 +293,7 @@ public class AlarmUtils {
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
         );
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarm.getNextTriggerTime(), pendingIntent);
     }
 
     public static void cancelAlarm(Context context, int requestCode) {
@@ -276,6 +312,7 @@ public class AlarmUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                newAlarmEntity.setNextTriggerTime(getNextTriggerTime(newAlarmEntity));
                 long id = alarmDao.insertAlarmEntity(newAlarmEntity);
                 newAlarmEntity.setId(id);
                 setAlarm(context, newAlarmEntity, (int) id * 10);
@@ -288,14 +325,35 @@ public class AlarmUtils {
             @Override
             public void run() {
                 long alarmId = alarmEntity.getId();
-                boolean enabled = alarmEntity.isEnabled();
-                int originalRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), false);
-                alarmDao.updateAlarmEnabled(alarmId, enabled);
-                if (enabled) {
-                    setAlarm(context, alarmEntity, originalRequestCode);
+                boolean disabled = alarmEntity.isDisabled();
+                boolean tempDisabled = alarmEntity.isTempDisabled();
+
+                AlarmEntity originalAlarmEntity = alarmDao.getActiveAlarmById(alarmId);
+                originalAlarmEntity.setDisabled(disabled);
+                originalAlarmEntity.setTempDisabled(tempDisabled);
+
+                int originalRequestCode = getRequestCode(alarmId, originalAlarmEntity.getRequestCodeSeq(), false);
+                int newRequestCode = getRequestCode(alarmId, originalAlarmEntity.getRequestCodeSeq(), true);
+                if (disabled) {
+                    originalAlarmEntity.setPreTriggerTime(0);
+                    originalAlarmEntity.setNextTriggerTime(0);
+                    cancelAlarm(context, originalRequestCode);
+
+                } else if (tempDisabled) {
+                    cancelAlarm(context, originalRequestCode);
+                    originalAlarmEntity.setPreTriggerTime(originalAlarmEntity.getNextTriggerTime());
+                    originalAlarmEntity.setNextTriggerTime(getNextTriggerTime(originalAlarmEntity));
+                    originalAlarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
+                    setAlarm(context, originalAlarmEntity, newRequestCode);
+
                 } else {
                     cancelAlarm(context, originalRequestCode);
+                    originalAlarmEntity.setPreTriggerTime(0);
+                    originalAlarmEntity.setNextTriggerTime(getNextTriggerTime(originalAlarmEntity));
+                    originalAlarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
+                    setAlarm(context, originalAlarmEntity, newRequestCode);
                 }
+                alarmDao.updateAlarmEntity(originalAlarmEntity);
             }
         }).start();
     }
@@ -307,6 +365,7 @@ public class AlarmUtils {
                 int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
                 int newRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), true);
 
+                alarmEntity.setNextTriggerTime(getNextTriggerTime(alarmEntity));
                 alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
                 alarmDao.updateAlarmEntity(alarmEntity);
                 cancelAlarm(context, originalRequestCode);
@@ -333,9 +392,15 @@ public class AlarmUtils {
             public void run() {
                 AlarmEntity alarmEntity = alarmDao.getActiveAlarmById(alarmId);
                 String alarmType = alarmEntity == null ? null : alarmEntity.getBaseAlarmType().getType();
-                if (!OnceAlarmType.ALARM_TYPE.equals(alarmType)) {
+                if (OnceAlarmType.ALARM_TYPE.equals(alarmType)) {
+                    alarmEntity.setDisabled(true);
+                    alarmEntity.setTempDisabled(false);
+                    alarmEntity.setNextTriggerTime(0);
+                    alarmDao.updateAlarmEntity(alarmEntity);
+                } else {
                     int newRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), true);
                     alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
+                    alarmEntity.setNextTriggerTime(getNextTriggerTime(alarmEntity));
                     alarmDao.updateAlarmEntity(alarmEntity);
                     setAlarm(context, alarmEntity, newRequestCode);
                 }

@@ -18,7 +18,7 @@ public interface AlarmDao {
     @Query("SELECT * FROM AlarmEntity where id=:id")
     LiveData<AlarmEntity> getAlarmById(long id);
 
-    @Query("SELECT * FROM AlarmEntity where enabled=true ORDER BY time ASC")
+    @Query("SELECT * FROM AlarmEntity where disabled=false ORDER BY time ASC")
     List<AlarmEntity> getAllActiveAlarms();
 
     @Query("SELECT * FROM AlarmEntity where id=:id")
@@ -26,9 +26,6 @@ public interface AlarmDao {
 
     @Insert
     long insertAlarmEntity(AlarmEntity alarmEntity);
-
-    @Query("UPDATE alarmEntity SET enabled=:enabled WHERE id=:id")
-    void updateAlarmEnabled(long id, boolean enabled);
 
     @Update
     void updateAlarmEntity(AlarmEntity alarmEntity);

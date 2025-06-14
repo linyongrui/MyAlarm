@@ -52,7 +52,7 @@ public class AlarmViewModel extends ViewModel {
                 String timeLeftStr = AlarmUtils.getNextTriggerTimeLeft(alarmList.getValue());
                 timeLeft.postValue(timeLeftStr);
             }
-        }, 500, 60 * 1000);
+        }, 500, 30 * 1000);
     }
 
     public void stopTimer() {

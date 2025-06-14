@@ -19,15 +19,25 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myalarm.R;
+import com.example.myalarm.alarmtype.OnceAlarmType;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
+import com.example.myalarm.util.DateTimeUtils;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
 
 public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder> {
+
+    private OnItemClickListener listener;
+    private OnMultiSelectStartListener multiSelectListener;
+    private boolean multiSelectMode = false;
+    private Set<Long> selectedIds = new HashSet<>();
+    private String alertDialogDismissByWho = null;
+
     public AlarmAdapter() {
         super(DIFF_CALLBACK);
     }
@@ -42,31 +52,22 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         public boolean areContentsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
             return oldItem.getTime().equals(newItem.getTime()) &&
                     oldItem.getRepeatStr().equals(newItem.getRepeatStr()) &&
-                    oldItem.isEnabled() == newItem.isEnabled();
+                    oldItem.isDisabled() == newItem.isDisabled() &&
+                    oldItem.isTempDisabled() == newItem.isTempDisabled();
         }
     };
-
-    public interface OnItemClickListener {
-        void onItemClick(AlarmEntity alarm);
-    }
-
-    private OnItemClickListener listener;
 
     public void setOnItemClickListener(OnItemClickListener l) {
         this.listener = l;
     }
 
-    public interface OnMultiSelectStartListener {
-        void onMultiSelectStart(boolean multiSelectMode);
-    }
-
-    private OnMultiSelectStartListener multiSelectListener;
-
     public void setOnMultiSelectStartListener(OnMultiSelectStartListener listener) {
         this.multiSelectListener = listener;
     }
 
-    private boolean multiSelectMode = false;
+    public Set<Long> getSelectedIds() {
+        return selectedIds;
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     public void setMultiSelectMode(boolean multiSelectMode) {
@@ -80,16 +81,6 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         }
     }
 
-    public boolean isInMultiSelectMode() {
-        return multiSelectMode;
-    }
-
-    private Set<Long> selectedIds = new HashSet<>();
-
-    public Set<Long> getSelectedIds() {
-        return selectedIds;
-    }
-
     @NonNull
     @Override
     public AlarmViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -98,33 +89,154 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         return new AlarmViewHolder(view);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
         AlarmEntity alarmEntity = getItem(position);
         holder.bind(alarmEntity);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String timeStr = alarmEntity.getTime().format(formatter);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String timeStr = alarmEntity.getTime().format(timeFormatter);
         holder.timeTextView.setText(timeStr);
         holder.repeatTextView.setText(alarmEntity.getRepeatStr());
+        holder.alarmNameTextView.setText(alarmEntity.getName());
+        nextTriggerDateStrChange(holder, alarmEntity, false);
 
         holder.alarmSwitch.setOnCheckedChangeListener(null);
-        holder.alarmSwitch.setChecked(alarmEntity.isEnabled());
+        holder.alarmSwitch.setChecked(!alarmEntity.isDisabled() && !alarmEntity.isTempDisabled());
         holder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    alarmEntity.setEnabled(true);
+                    alarmEntity.setDisabled(false);
+                    alarmEntity.setTempDisabled(false);
                     AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
+                    nextTriggerDateStrChange(holder, alarmEntity, true);
+
+                } else if (OnceAlarmType.ALARM_TYPE.equals(alarmEntity.getBaseAlarmType().getType())) {
+                    alarmEntity.setTempDisabled(false);
+                    alarmEntity.setDisabled(true);
+                    AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
+                    holder.nextTriggerTextView.setVisibility(View.GONE);
+
                 } else {
-                    showConfirmationDialog(holder.alarmSwitch, alarmEntity);
+                    showConfirmationDialog(holder, holder.alarmSwitch, alarmEntity);
                 }
             }
         });
     }
 
+    @SuppressLint("ResourceAsColor")
+    private void nextTriggerDateStrChange(AlarmViewHolder holder, AlarmEntity alarmEntity, boolean recalculate) {
+        boolean disabled = alarmEntity.isDisabled();
+        boolean tempDisabled = alarmEntity.isTempDisabled();
+        long preTriggerTime = alarmEntity.getPreTriggerTime();
+        long nextTriggerTime = alarmEntity.getNextTriggerTime();
+
+        if (recalculate) {
+            if (disabled) {
+                preTriggerTime = 0;
+                nextTriggerTime = 0;
+            } else if (tempDisabled) {
+                preTriggerTime = nextTriggerTime;
+                nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
+            } else {
+                preTriggerTime = 0;
+                nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
+            }
+        }
+
+        LocalDate preTriggerDate = DateTimeUtils.long2LocalDateTime(preTriggerTime).toLocalDate();
+        LocalDate nextTriggerDate = DateTimeUtils.long2LocalDateTime(nextTriggerTime).toLocalDate();
+
+        String preDateStr = DateTimeUtils.getDateStr(preTriggerDate);
+        String nextDateStr = DateTimeUtils.getDateStr(nextTriggerDate);
+        StringBuilder nextTriggerDateStr = new StringBuilder();
+        if (disabled) {
+            holder.timeTextView.setTextColor(holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null));
+            holder.nextTriggerTextView.setVisibility(View.GONE);
+        } else if (tempDisabled) {
+            holder.timeTextView.setTextColor(holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null));
+            if (LocalDate.now().isAfter(preTriggerDate)) {
+                alarmEntity.setDisabled(false);
+                alarmEntity.setTempDisabled(false);
+                AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
+                nextTriggerDateStrChange(holder, alarmEntity, true);
+            } else {
+                holder.nextTriggerTextView.setVisibility(View.VISIBLE);
+                nextTriggerDateStr.append(preDateStr + "已关闭，");
+                nextTriggerDateStr.append("下次响铃将在" + nextDateStr);
+            }
+        } else {
+            holder.timeTextView.setTextColor(holder.alarmSwitch.getContext().getResources().getColor(R.color.black, null));
+            holder.nextTriggerTextView.setVisibility(View.VISIBLE);
+            nextTriggerDateStr.append("下次响铃将在" + nextDateStr);
+        }
+        holder.nextTriggerTextView.setText(nextTriggerDateStr);
+    }
+
+    private void showConfirmationDialog(AlarmViewHolder holder, Switch alarmSwitch, AlarmEntity alarmEntity) {
+        alertDialogDismissByWho = null;
+        long nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
+        LocalDate nextTriggerDate = DateTimeUtils.long2LocalDateTime(nextTriggerTime).toLocalDate();
+        StringBuilder tempDisableDesc = new StringBuilder();
+        tempDisableDesc.append("仅");
+        tempDisableDesc.append(DateTimeUtils.getDateStr(nextTriggerDate));
+        tempDisableDesc.append("关闭一次");
+
+        Context context = alarmSwitch.getContext();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("要关闭此重复闹钟吗？")
+                .setPositiveButton(tempDisableDesc, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, tempDisableDesc, Toast.LENGTH_SHORT).show();
+                        alertDialogDismissByWho = "once";
+                        alarmEntity.setTempDisabled(true);
+                        alarmEntity.setDisabled(false);
+                        alarmSwitch.setChecked(false);
+                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
+                        nextTriggerDateStrChange(holder, alarmEntity, true);
+                    }
+                })
+                .setNegativeButton("关闭此重复闹钟", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "关闭此重复闹钟", Toast.LENGTH_SHORT).show();
+                        alertDialogDismissByWho = "close";
+                        alarmEntity.setTempDisabled(false);
+                        alarmEntity.setDisabled(true);
+                        alarmSwitch.setChecked(false);
+                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
+                        holder.nextTriggerTextView.setVisibility(View.GONE);
+                    }
+                })
+                .setNeutralButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertDialogDismissByWho = "cancel";
+                        alarmEntity.setTempDisabled(false);
+                        alarmEntity.setDisabled(false);
+                        alarmSwitch.setChecked(true);
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (alertDialogDismissByWho == null) {
+                            alarmEntity.setTempDisabled(false);
+                            alarmEntity.setDisabled(false);
+                            alarmSwitch.setChecked(true);
+                        }
+                    }
+                })
+                .show();
+    }
+
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
         TextView timeTextView;
         TextView repeatTextView;
+        TextView alarmNameTextView;
+        TextView nextTriggerTextView;
         Switch alarmSwitch;
         CheckBox checkBox;
 
@@ -132,6 +244,8 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             super(itemView);
             timeTextView = itemView.findViewById(R.id.timeTextView);
             repeatTextView = itemView.findViewById(R.id.repeatTextView);
+            alarmNameTextView = itemView.findViewById(R.id.alarmNameTextView);
+            nextTriggerTextView = itemView.findViewById(R.id.nextTriggerTextView);
             alarmSwitch = itemView.findViewById(R.id.alarmSwitch);
             checkBox = itemView.findViewById(R.id.checkbox);
         }
@@ -167,50 +281,11 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         }
     }
 
-    private String alertDialogDismissByWho = null;
+    public interface OnItemClickListener {
+        void onItemClick(AlarmEntity alarm);
+    }
 
-    private void showConfirmationDialog(Switch alarmSwitch, AlarmEntity alarmEntity) {
-        alertDialogDismissByWho = null;
-        Context context = alarmSwitch.getContext();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("要关闭此重复闹钟吗？")
-                .setPositiveButton("仅明天关闭一次", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "仅明天关闭一次闹钟", Toast.LENGTH_SHORT).show();
-                        alertDialogDismissByWho = "once";
-                        alarmEntity.setEnabled(false);
-                        alarmSwitch.setChecked(false);
-                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
-                    }
-                })
-                .setNegativeButton("关闭此重复闹钟", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "关闭此重复闹钟", Toast.LENGTH_SHORT).show();
-                        alertDialogDismissByWho = "close";
-                        alarmEntity.setEnabled(false);
-                        alarmSwitch.setChecked(false);
-                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
-                    }
-                })
-                .setNeutralButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        alertDialogDismissByWho = "cancel";
-                        alarmEntity.setEnabled(true);
-                        alarmSwitch.setChecked(true);
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (alertDialogDismissByWho == null) {
-                            alarmEntity.setEnabled(true);
-                            alarmSwitch.setChecked(true);
-                        }
-                    }
-                })
-                .show();
+    public interface OnMultiSelectStartListener {
+        void onMultiSelectStart(boolean multiSelectMode);
     }
 }
