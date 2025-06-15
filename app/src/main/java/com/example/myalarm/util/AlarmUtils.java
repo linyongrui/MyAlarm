@@ -84,13 +84,14 @@ public class AlarmUtils {
     public static LocalDate getNextTriggerDateForWeek(AlarmEntity alarmEntity) {
         LocalDate dateFrom = LocalDate.now();
         LocalTime timeFrom = LocalTime.now().withSecond(0).withNano(0);
+        LocalDate nextTriggerDateCursor = LocalDate.now();
         if (alarmEntity.isTempDisabled()) {
             LocalDateTime localDateTime = DateTimeUtils.long2LocalDateTime(alarmEntity.getNextTriggerTime());
             dateFrom = localDateTime.toLocalDate();
             timeFrom = localDateTime.toLocalTime();
+            nextTriggerDateCursor = localDateTime.toLocalDate();
         }
 
-        LocalDate nextTriggerDate = null;
         boolean isBeforeNow = !alarmEntity.getTime().isAfter(timeFrom);
 
         WeekAlarmType weekAlarmType = (WeekAlarmType) alarmEntity.getBaseAlarmType();
@@ -103,7 +104,6 @@ public class AlarmUtils {
 
         int todayOfWeekNumber = dateFrom.getDayOfWeek().getValue();
         todayOfWeekNumber = todayOfWeekNumber == 7 ? 0 : todayOfWeekNumber;
-        LocalDate nextTriggerDateCursor = LocalDate.now();
         LocalDate nextTriggerDateT1 = null;
         LocalDate nextTriggerDateT2 = null;
 
@@ -130,6 +130,7 @@ public class AlarmUtils {
             count++;
         } while ((isNextTriggerDateT1Get && count < 7) || (!isNextTriggerDateT1Get && count < 366));
 
+        LocalDate nextTriggerDate = null;
         if (nextTriggerDateT1 != null && nextTriggerDateT2 != null) {
             nextTriggerDate = nextTriggerDateT1.isBefore(nextTriggerDateT2) ? nextTriggerDateT1 : nextTriggerDateT2;
         } else if (nextTriggerDateT1 != null) {

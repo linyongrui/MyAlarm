@@ -99,7 +99,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         holder.timeTextView.setText(timeStr);
         holder.repeatTextView.setText(alarmEntity.getRepeatStr());
         holder.alarmNameTextView.setText(alarmEntity.getName());
-        nextTriggerDateStrChange(holder, alarmEntity, false);
+        alarmSwitchStyleHandle(holder, alarmEntity, false);
 
         holder.alarmSwitch.setOnCheckedChangeListener(null);
         holder.alarmSwitch.setChecked(!alarmEntity.isDisabled() && !alarmEntity.isTempDisabled());
@@ -110,13 +110,13 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
                     alarmEntity.setDisabled(false);
                     alarmEntity.setTempDisabled(false);
                     AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
-                    nextTriggerDateStrChange(holder, alarmEntity, true);
+                    alarmSwitchStyleHandle(holder, alarmEntity, true);
 
                 } else if (OnceAlarmType.ALARM_TYPE.equals(alarmEntity.getBaseAlarmType().getType())) {
                     alarmEntity.setTempDisabled(false);
                     alarmEntity.setDisabled(true);
                     AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
-                    holder.nextTriggerTextView.setVisibility(View.GONE);
+                    alarmSwitchStyleHandle(holder, alarmEntity, true);
 
                 } else {
                     showConfirmationDialog(holder, holder.alarmSwitch, alarmEntity);
@@ -126,50 +126,49 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
     }
 
     @SuppressLint("ResourceAsColor")
-    private void nextTriggerDateStrChange(AlarmViewHolder holder, AlarmEntity alarmEntity, boolean recalculate) {
+    private void alarmSwitchStyleHandle(AlarmViewHolder holder, AlarmEntity alarmEntity, boolean recalculate) {
         boolean disabled = alarmEntity.isDisabled();
         boolean tempDisabled = alarmEntity.isTempDisabled();
         long preTriggerTime = alarmEntity.getPreTriggerTime();
         long nextTriggerTime = alarmEntity.getNextTriggerTime();
-
-        if (recalculate) {
-            if (disabled) {
-                preTriggerTime = 0;
-                nextTriggerTime = 0;
-            } else if (tempDisabled) {
-                preTriggerTime = nextTriggerTime;
-                nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
-            } else {
-                preTriggerTime = 0;
-                nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
-            }
-        }
-
-        LocalDate preTriggerDate = DateTimeUtils.long2LocalDateTime(preTriggerTime).toLocalDate();
-        LocalDate nextTriggerDate = DateTimeUtils.long2LocalDateTime(nextTriggerTime).toLocalDate();
-
-        String preDateStr = DateTimeUtils.getDateStr(preTriggerDate);
-        String nextDateStr = DateTimeUtils.getDateStr(nextTriggerDate);
+        int colorGray = holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null);
+        int colorBlack = holder.alarmSwitch.getContext().getResources().getColor(R.color.black, null);
         StringBuilder nextTriggerDateStr = new StringBuilder();
         if (disabled) {
-            holder.timeTextView.setTextColor(holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null));
-            holder.nextTriggerTextView.setVisibility(View.GONE);
-        } else if (tempDisabled) {
-            holder.timeTextView.setTextColor(holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null));
-            if (LocalDate.now().isAfter(preTriggerDate)) {
-                alarmEntity.setDisabled(false);
-                alarmEntity.setTempDisabled(false);
-                AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
-                nextTriggerDateStrChange(holder, alarmEntity, true);
+            holder.timeTextView.setTextColor(colorGray);
+            holder.alarmNameTextView.setTextColor(colorGray);
+            nextTriggerDateStr.append("闹钟已关闭");
+        } else {
+            if (recalculate) {
+                if (tempDisabled) {
+                    preTriggerTime = nextTriggerTime;
+                    nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
+                } else {
+                    preTriggerTime = 0;
+                    nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
+                }
+            }
+            LocalDate preTriggerDate = DateTimeUtils.long2LocalDateTime(preTriggerTime).toLocalDate();
+            LocalDate nextTriggerDate = DateTimeUtils.long2LocalDateTime(nextTriggerTime).toLocalDate();
+            String preDateStr = DateTimeUtils.getDateStr(preTriggerDate);
+            String nextDateStr = DateTimeUtils.getDateStr(nextTriggerDate);
+            if (tempDisabled) {
+                holder.timeTextView.setTextColor(colorGray);
+                holder.alarmNameTextView.setTextColor(colorGray);
+                if (LocalDate.now().isAfter(preTriggerDate)) {
+                    alarmEntity.setDisabled(false);
+                    alarmEntity.setTempDisabled(false);
+                    AlarmUtils.updateAlarmEnabled(holder.alarmSwitch.getContext(), alarmEntity);
+                    alarmSwitchStyleHandle(holder, alarmEntity, true);
+                } else {
+                    nextTriggerDateStr.append(preDateStr + "已关闭，");
+                    nextTriggerDateStr.append("下次响铃将在" + nextDateStr);
+                }
             } else {
-                holder.nextTriggerTextView.setVisibility(View.VISIBLE);
-                nextTriggerDateStr.append(preDateStr + "已关闭，");
+                holder.timeTextView.setTextColor(colorBlack);
+                holder.alarmNameTextView.setTextColor(colorBlack);
                 nextTriggerDateStr.append("下次响铃将在" + nextDateStr);
             }
-        } else {
-            holder.timeTextView.setTextColor(holder.alarmSwitch.getContext().getResources().getColor(R.color.black, null));
-            holder.nextTriggerTextView.setVisibility(View.VISIBLE);
-            nextTriggerDateStr.append("下次响铃将在" + nextDateStr);
         }
         holder.nextTriggerTextView.setText(nextTriggerDateStr);
     }
@@ -195,7 +194,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
                         alarmEntity.setDisabled(false);
                         alarmSwitch.setChecked(false);
                         AlarmUtils.updateAlarmEnabled(context, alarmEntity);
-                        nextTriggerDateStrChange(holder, alarmEntity, true);
+                        alarmSwitchStyleHandle(holder, alarmEntity, true);
                     }
                 })
                 .setNegativeButton("关闭此重复闹钟", new DialogInterface.OnClickListener() {
@@ -207,7 +206,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
                         alarmEntity.setDisabled(true);
                         alarmSwitch.setChecked(false);
                         AlarmUtils.updateAlarmEnabled(context, alarmEntity);
-                        holder.nextTriggerTextView.setVisibility(View.GONE);
+                        alarmSwitchStyleHandle(holder, alarmEntity, true);
                     }
                 })
                 .setNeutralButton("取消", new DialogInterface.OnClickListener() {
