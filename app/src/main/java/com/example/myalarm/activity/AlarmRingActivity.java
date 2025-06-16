@@ -2,6 +2,7 @@ package com.example.myalarm.activity;
 
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -29,6 +30,7 @@ public class AlarmRingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // 设置窗口标志
         Window window = getWindow();
