@@ -379,9 +379,11 @@ public class AlarmUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (long alarmId : ids) {
-                    alarmDao.deleteAlarmById(alarmId);
-                    cancelAlarm(context, (int) alarmId);
+                List<AlarmEntity> alarmEntities = alarmDao.getAlarmByIds(ids);
+                alarmDao.deleteAlarmByIds(ids);
+                for (AlarmEntity alarmEntity : alarmEntities) {
+                    int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
+                    cancelAlarm(context, originalRequestCode);
                 }
             }
         }).start();

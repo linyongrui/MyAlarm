@@ -16,6 +16,6 @@ public class WorkingDayAlarmType extends BaseAlarmType {
 
     @Override
     public String getRepeatDesc() {
-        return "工作日(包括补班)";
+        return "法定工作日";
     }
 }

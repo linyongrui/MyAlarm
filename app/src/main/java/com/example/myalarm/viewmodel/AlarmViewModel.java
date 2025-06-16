@@ -20,7 +20,7 @@ public class AlarmViewModel extends ViewModel {
     private Timer timer;
 
     public AlarmViewModel() {
-        alarmList = alarmDao.getAllAlarms();
+        alarmList = alarmDao.liveDataGetAllAlarms();
         alarmList.observeForever(alarms -> {
             startCountdownTo();
         });
@@ -69,6 +69,6 @@ public class AlarmViewModel extends ViewModel {
     }
 
     public LiveData<AlarmEntity> getAlarmById(long id) {
-        return alarmDao.getAlarmById(id);
+        return alarmDao.liveDataGetAlarmById(id);
     }
 }

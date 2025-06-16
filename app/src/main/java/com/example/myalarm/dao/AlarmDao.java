@@ -9,20 +9,24 @@ import androidx.room.Update;
 import com.example.myalarm.entity.AlarmEntity;
 
 import java.util.List;
+import java.util.Set;
 
 @Dao
 public interface AlarmDao {
     @Query("SELECT * FROM AlarmEntity ORDER BY time ASC")
-    LiveData<List<AlarmEntity>> getAllAlarms();
+    LiveData<List<AlarmEntity>> liveDataGetAllAlarms();
 
     @Query("SELECT * FROM AlarmEntity where id=:id")
-    LiveData<AlarmEntity> getAlarmById(long id);
+    LiveData<AlarmEntity> liveDataGetAlarmById(long id);
 
     @Query("SELECT * FROM AlarmEntity where disabled=false ORDER BY time ASC")
-    List<AlarmEntity> getAllActiveAlarms();
+    List<AlarmEntity> getAllAlarms();
 
     @Query("SELECT * FROM AlarmEntity where id=:id")
     AlarmEntity getActiveAlarmById(long id);
+
+    @Query("SELECT * FROM AlarmEntity where ID in(:alarmIds)")
+    List<AlarmEntity> getAlarmByIds(Set<Long> alarmIds);
 
     @Insert
     long insertAlarmEntity(AlarmEntity alarmEntity);
@@ -30,6 +34,6 @@ public interface AlarmDao {
     @Update
     void updateAlarmEntity(AlarmEntity alarmEntity);
 
-    @Query("DELETE FROM AlarmEntity WHERE ID=:alarmId")
-    void deleteAlarmById(long alarmId);
+    @Query("DELETE FROM AlarmEntity WHERE ID in(:alarmIds)")
+    void deleteAlarmByIds(Set<Long> alarmIds);
 }

@@ -16,11 +16,16 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            List<AlarmEntity> activeAlarms = alarmDao.getAllActiveAlarms();
-            for (AlarmEntity alarmEntity : activeAlarms) {
-                int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
-                AlarmUtils.setAlarm(context, alarmEntity, originalRequestCode);
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<AlarmEntity> activeAlarms = alarmDao.getAllAlarms();
+                    for (AlarmEntity alarmEntity : activeAlarms) {
+                        int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
+                        AlarmUtils.setAlarm(context, alarmEntity, originalRequestCode);
+                    }
+                }
+            }).start();
         }
     }
 }

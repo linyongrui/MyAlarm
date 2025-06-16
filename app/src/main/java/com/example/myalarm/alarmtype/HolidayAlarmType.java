@@ -16,6 +16,6 @@ public class HolidayAlarmType extends BaseAlarmType {
 
     @Override
     public String getRepeatDesc() {
-        return "非工作日(包括节假日、周末、不包括补班)";
+        return "非工作日";
     }
 }

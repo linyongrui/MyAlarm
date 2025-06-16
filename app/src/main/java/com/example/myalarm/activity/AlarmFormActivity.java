@@ -241,6 +241,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         llDaysOfWeek.setVisibility(View.GONE);
         llSkip.setVisibility(View.GONE);
 
+        String repeatStrNote = "";
         switch (optionId) {
             case DateAlarmType.ALARM_TYPE:
                 llSkip.setVisibility(View.VISIBLE);
@@ -249,16 +250,20 @@ public class AlarmFormActivity extends AppCompatActivity {
                 llDaysOfWeek.setVisibility(View.VISIBLE);
                 llSkip.setVisibility(View.VISIBLE);
                 break;
-            case EveryDayAlarmType.ALARM_TYPE:
             case HolidayAlarmType.ALARM_TYPE:
-            case OnceAlarmType.ALARM_TYPE:
+                repeatStrNote = "(包括节假日、周末、不包括补班)";
+                break;
             case WorkingDayAlarmType.ALARM_TYPE:
+                repeatStrNote = "(包括补班)";
+                break;
+            case EveryDayAlarmType.ALARM_TYPE:
+            case OnceAlarmType.ALARM_TYPE:
                 break;
             default:
                 throw new IllegalArgumentException("Unknown alarm type: " + optionId);
         }
 
-        repeatDatesTextView.setText(getNewAlarmEntity().getRepeatStr());
+        repeatDatesTextView.setText(getNewAlarmEntity().getRepeatStr() + repeatStrNote);
         updateTimeUntilNextRing();
     }
 
