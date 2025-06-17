@@ -48,7 +48,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         alarmTypeList.clear();
         alarmTypeList.add(new SpinnerOption(OnceAlarmType.ALARM_TYPE, "响一次"));
         alarmTypeList.add(new SpinnerOption(EveryDayAlarmType.ALARM_TYPE, "每天"));
-        alarmTypeList.add(new SpinnerOption(WorkingDayAlarmType.ALARM_TYPE, "工作日"));
+        alarmTypeList.add(new SpinnerOption(WorkingDayAlarmType.ALARM_TYPE, "法定工作日"));
         alarmTypeList.add(new SpinnerOption(HolidayAlarmType.ALARM_TYPE, "非工作日"));
         alarmTypeList.add(new SpinnerOption(WeekAlarmType.ALARM_TYPE, "按周"));
         alarmTypeList.add(new SpinnerOption(DateAlarmType.ALARM_TYPE, "按日期"));

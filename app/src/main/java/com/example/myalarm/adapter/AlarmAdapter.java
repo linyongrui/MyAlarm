@@ -1,7 +1,6 @@
 package com.example.myalarm.adapter;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -23,6 +22,7 @@ import com.example.myalarm.alarmtype.OnceAlarmType;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.util.AlarmUtils;
 import com.example.myalarm.util.DateTimeUtils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -133,6 +133,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         long nextTriggerTime = alarmEntity.getNextTriggerTime();
         int colorGray = holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null);
         int colorBlack = holder.alarmSwitch.getContext().getResources().getColor(R.color.black, null);
+        int colorGrayBlack = holder.alarmSwitch.getContext().getResources().getColor(R.color.gray_black, null);
         StringBuilder nextTriggerDateStr = new StringBuilder();
         if (disabled) {
             holder.timeTextView.setTextColor(colorGray);
@@ -166,7 +167,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
                 }
             } else {
                 holder.timeTextView.setTextColor(colorBlack);
-                holder.alarmNameTextView.setTextColor(colorBlack);
+                holder.alarmNameTextView.setTextColor(colorGrayBlack);
                 nextTriggerDateStr.append("下次响铃将在" + nextDateStr);
             }
         }
@@ -182,53 +183,65 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         tempDisableDesc.append(DateTimeUtils.getDateStr(nextTriggerDate));
         tempDisableDesc.append("关闭一次");
 
-        Context context = alarmSwitch.getContext();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("要关闭此重复闹钟吗？")
-                .setPositiveButton(tempDisableDesc, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, tempDisableDesc, Toast.LENGTH_SHORT).show();
-                        alertDialogDismissByWho = "once";
-                        alarmEntity.setTempDisabled(true);
-                        alarmEntity.setDisabled(false);
-                        alarmSwitch.setChecked(false);
-                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
-                        alarmSwitchStyleHandle(holder, alarmEntity, true);
-                    }
-                })
-                .setNegativeButton("关闭此重复闹钟", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "关闭此重复闹钟", Toast.LENGTH_SHORT).show();
-                        alertDialogDismissByWho = "close";
-                        alarmEntity.setTempDisabled(false);
-                        alarmEntity.setDisabled(true);
-                        alarmSwitch.setChecked(false);
-                        AlarmUtils.updateAlarmEnabled(context, alarmEntity);
-                        alarmSwitchStyleHandle(holder, alarmEntity, true);
-                    }
-                })
-                .setNeutralButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        alertDialogDismissByWho = "cancel";
-                        alarmEntity.setTempDisabled(false);
-                        alarmEntity.setDisabled(false);
-                        alarmSwitch.setChecked(true);
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (alertDialogDismissByWho == null) {
-                            alarmEntity.setTempDisabled(false);
-                            alarmEntity.setDisabled(false);
-                            alarmSwitch.setChecked(true);
-                        }
-                    }
-                })
-                .show();
+        Context context = holder.alarmNameTextView.getContext();
+
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetDialogCustom);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.custom_alert_dialog, null);
+        bottomSheetDialog.setContentView(dialogView);
+        bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (alertDialogDismissByWho == null) {
+                    alarmEntity.setTempDisabled(false);
+                    alarmEntity.setDisabled(false);
+                    alarmSwitch.setChecked(true);
+                }
+            }
+        });
+
+        TextView closeOnceButton = dialogView.findViewById(R.id.btn_close_once);
+        TextView closeRepeatButton = dialogView.findViewById(R.id.btn_close_repeat);
+        TextView cancelButton = dialogView.findViewById(R.id.btn_cancel);
+
+        closeOnceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, tempDisableDesc, Toast.LENGTH_SHORT).show();
+                alertDialogDismissByWho = "once";
+                alarmEntity.setTempDisabled(true);
+                alarmEntity.setDisabled(false);
+                alarmSwitch.setChecked(false);
+                AlarmUtils.updateAlarmEnabled(context, alarmEntity);
+                alarmSwitchStyleHandle(holder, alarmEntity, true);
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        closeRepeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "关闭此重复闹钟", Toast.LENGTH_SHORT).show();
+                alertDialogDismissByWho = "close";
+                alarmEntity.setTempDisabled(false);
+                alarmEntity.setDisabled(true);
+                alarmSwitch.setChecked(false);
+                AlarmUtils.updateAlarmEnabled(context, alarmEntity);
+                alarmSwitchStyleHandle(holder, alarmEntity, true);
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialogDismissByWho = "cancel";
+                alarmEntity.setTempDisabled(false);
+                alarmEntity.setDisabled(false);
+                alarmSwitch.setChecked(true);
+                bottomSheetDialog.dismiss();
+            }
+        });
+        bottomSheetDialog.show();
     }
 
     public class AlarmViewHolder extends RecyclerView.ViewHolder {
