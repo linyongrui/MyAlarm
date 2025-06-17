@@ -21,8 +21,10 @@ public class BootReceiver extends BroadcastReceiver {
                 public void run() {
                     List<AlarmEntity> activeAlarms = alarmDao.getAllAlarms();
                     for (AlarmEntity alarmEntity : activeAlarms) {
-                        int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
-                        AlarmUtils.setAlarm(context, alarmEntity, originalRequestCode);
+                        if (!alarmEntity.isDisabled()) {
+                            int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
+                            AlarmUtils.setAlarm(context, alarmEntity, originalRequestCode);
+                        }
                     }
                 }
             }).start();

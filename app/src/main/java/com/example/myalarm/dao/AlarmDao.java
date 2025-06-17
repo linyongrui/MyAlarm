@@ -19,7 +19,7 @@ public interface AlarmDao {
     @Query("SELECT * FROM AlarmEntity where id=:id")
     LiveData<AlarmEntity> liveDataGetAlarmById(long id);
 
-    @Query("SELECT * FROM AlarmEntity where disabled=false ORDER BY time ASC")
+    @Query("SELECT * FROM AlarmEntity ORDER BY time ASC")
     List<AlarmEntity> getAllAlarms();
 
     @Query("SELECT * FROM AlarmEntity where id=:id")

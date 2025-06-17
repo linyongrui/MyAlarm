@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         String url = HolidayUtils.GET_HOLIDAY_URL.replace("{year}", year + "");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
-            HolidayDao holidayDao = DatabaseClient.getInstance().getHolidayEntityDatabase().holidayDao();
+            HolidayDao holidayDao = DatabaseClient.getInstance().getAlarmDatabase().holidayDao();
 
             @Override
             public void run() {

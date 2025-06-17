@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class AlarmUtils {
     public static AlarmDao alarmDao = DatabaseClient.getInstance()
-            .getAlarmEntityDatabase()
+            .getAlarmDatabase()
             .alarmDao();
 
     public static boolean isWorkingDay(LocalDate date) {
