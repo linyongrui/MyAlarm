@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.myalarm.data.DatabaseClient;
 import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.entity.HolidayEntity;
 import com.example.myalarm.util.AlarmUtils;
+import com.example.myalarm.util.BackupUtils;
 import com.example.myalarm.util.HolidayUtils;
 import com.example.myalarm.util.PermissionUtils;
 import com.example.myalarm.viewmodel.AlarmViewModel;
@@ -44,6 +46,9 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSION = 100;
+    private static final int REQUEST_EXPORT_JSON = 1003;
+    private static final int REQUEST_IMPORT_JSON = 1004;
+
     private static final String[] PERMISSIONS = new String[]{
             Manifest.permission.POST_NOTIFICATIONS
     };
@@ -119,7 +124,34 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, AlarmFormActivity.class));
             }
         });
+
+        findViewById(R.id.btn_export_json).setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType("application/json");
+            intent.putExtra(Intent.EXTRA_TITLE, "alarm_backup.json");
+            startActivityForResult(intent, REQUEST_EXPORT_JSON);
+        });
+
+        findViewById(R.id.btn_import_json).setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("application/json");
+            startActivityForResult(intent, REQUEST_IMPORT_JSON);
+        });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,  Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null || resultCode != RESULT_OK) return;
+
+        Uri uri = data.getData();
+        if (requestCode == REQUEST_EXPORT_JSON) {
+            BackupUtils.exportToJson(this.getApplicationContext(), uri);
+        } else if (requestCode == REQUEST_IMPORT_JSON) {
+            BackupUtils.importFromJson(this, uri);
+        }
+    }
+
 
     private void holidaysInit() {
         LocalDate today = LocalDate.now();
