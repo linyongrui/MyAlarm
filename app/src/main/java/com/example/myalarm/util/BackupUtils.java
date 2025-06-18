@@ -2,11 +2,18 @@ package com.example.myalarm.util;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.dao.AlarmDao;
 import com.example.myalarm.entity.AlarmEntity;
+import com.example.myalarm.util.serializer.AlarmTypeAdapter;
+import com.example.myalarm.util.serializer.LocalTimeAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
@@ -15,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,19 +31,24 @@ public class BackupUtils {
         new Thread(() -> {
             try {
                 AlarmDao dao = AlarmUtils.alarmDao;
-                List<AlarmEntity> alarms = dao.getAllAlarms(); // 用 blocking 方法
+                List<AlarmEntity> alarms = dao.getAllAlarms();
 
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                        .registerTypeAdapter(BaseAlarmType.class, new AlarmTypeAdapter())
+                        .create();
                 String json = gson.toJson(alarms);
+
+                Log.i("terry", "exportToJson:" + json);
 
                 OutputStream os = context.getContentResolver().openOutputStream(targetUri);
                 os.write(json.getBytes(StandardCharsets.UTF_8));
                 os.close();
 
-//                showToast(context, "导出成功");
+                showToast(context, "导出成功");
             } catch (Exception e) {
                 e.printStackTrace();
-//                showToast(context, "导出失败");
+                showToast(context, "导出失败");
             }
         }).start();
     }
@@ -49,26 +62,32 @@ public class BackupUtils {
                         .collect(Collectors.joining("\n"));
                 is.close();
 
-                Gson gson = new Gson();
-                Type listType = new TypeToken<List<AlarmEntity>>() {}.getType();
+                Log.i("terry", "importFromJson:" + json);
+
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                        .registerTypeAdapter(BaseAlarmType.class, new AlarmTypeAdapter())
+                        .create();
+                Type listType = new TypeToken<List<AlarmEntity>>() {
+                }.getType();
                 List<AlarmEntity> alarms = gson.fromJson(json, listType);
 
-//                AlarmDao dao = AlarmUtils.alarmDao;
-                for(AlarmEntity alarmEntity:alarms) {
-                    AlarmUtils.saveAlarm(context ,alarmEntity); // 覆盖旧记录前可先 dao.clear()
+                for (AlarmEntity alarmEntity : alarms) {
+                    AlarmUtils.saveAlarm(context, alarmEntity); // 覆盖旧记录前可先 dao.clear()
                 }
 
-//                showToast(context, "导入成功");
+                showToast(context, "导入成功");
             } catch (Exception e) {
                 e.printStackTrace();
-//                showToast(context, "导入失败");
+                showToast(context, "导入失败");
             }
         }).start();
     }
 
     private static void showToast(Context context, String msg) {
-
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+        new Handler(Looper.getMainLooper()).post(() ->
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        );
     }
 
 }

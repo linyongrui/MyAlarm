@@ -13,7 +13,7 @@ import com.example.myalarm.entity.AlarmEntity;
 import com.example.myalarm.entity.HolidayEntity;
 
 
-@Database(entities = {AlarmEntity.class, HolidayEntity.class}, version = 12, exportSchema = false)
+@Database(entities = {AlarmEntity.class, HolidayEntity.class}, version = 1, exportSchema = false)
 @TypeConverters({AlarmTypeConverter.class, LocalTimeConverter.class})
 public abstract class AlarmDatabase extends RoomDatabase {
     public abstract AlarmDao alarmDao();

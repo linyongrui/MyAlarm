@@ -18,44 +18,44 @@ public class AlarmTypeConverter {
     private static final Gson gson = new Gson();
 
     @TypeConverter
-    public static String alarmToString(BaseAlarmType alarm) {
-        if (alarm == null) return null;
-        return gson.toJson(new AlarmWrapper(alarm.getType(), alarm));
+    public static String alarmTypeToString(BaseAlarmType alarmType) {
+        if (alarmType == null) return null;
+        return gson.toJson(new AlarmTypeWrapper(alarmType.getType(), alarmType));
     }
 
     @TypeConverter
-    public static BaseAlarmType stringToAlarm(String json) {
+    public static BaseAlarmType stringToAlarmType(String json) {
         if (json == null) return null;
 
-        Type wrapperType = new TypeToken<AlarmWrapper>() {
+        Type wrapperType = new TypeToken<AlarmTypeWrapper>() {
         }.getType();
-        AlarmWrapper wrapper = gson.fromJson(json, wrapperType);
+        AlarmTypeWrapper wrapper = gson.fromJson(json, wrapperType);
 
         switch (wrapper.type) {
             case DateAlarmType.ALARM_TYPE:
-                return gson.fromJson(gson.toJson(wrapper.alarm), DateAlarmType.class);
+                return gson.fromJson(gson.toJson(wrapper.alarmType), DateAlarmType.class);
             case EveryDayAlarmType.ALARM_TYPE:
-                return gson.fromJson(gson.toJson(wrapper.alarm), EveryDayAlarmType.class);
+                return gson.fromJson(gson.toJson(wrapper.alarmType), EveryDayAlarmType.class);
             case HolidayAlarmType.ALARM_TYPE:
-                return gson.fromJson(gson.toJson(wrapper.alarm), HolidayAlarmType.class);
+                return gson.fromJson(gson.toJson(wrapper.alarmType), HolidayAlarmType.class);
             case OnceAlarmType.ALARM_TYPE:
-                return gson.fromJson(gson.toJson(wrapper.alarm), OnceAlarmType.class);
+                return gson.fromJson(gson.toJson(wrapper.alarmType), OnceAlarmType.class);
             case WeekAlarmType.ALARM_TYPE:
-                return gson.fromJson(gson.toJson(wrapper.alarm), WeekAlarmType.class);
+                return gson.fromJson(gson.toJson(wrapper.alarmType), WeekAlarmType.class);
             case WorkingDayAlarmType.ALARM_TYPE:
-                return gson.fromJson(gson.toJson(wrapper.alarm), WorkingDayAlarmType.class);
+                return gson.fromJson(gson.toJson(wrapper.alarmType), WorkingDayAlarmType.class);
             default:
                 throw new IllegalArgumentException("Unknown alarm type: " + wrapper.type);
         }
     }
 
-    private static class AlarmWrapper {
+    private static class AlarmTypeWrapper {
         String type;
-        Object alarm;
+        Object alarmType;
 
-        public AlarmWrapper(String type, Object alarm) {
+        public AlarmTypeWrapper(String type, Object alarmType) {
             this.type = type;
-            this.alarm = alarm;
+            this.alarmType = alarmType;
         }
     }
 }
