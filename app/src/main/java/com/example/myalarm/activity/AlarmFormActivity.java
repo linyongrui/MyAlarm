@@ -43,6 +43,9 @@ import java.util.Objects;
 public class AlarmFormActivity extends AppCompatActivity {
 
     private static final List<SpinnerOption> alarmTypeList = new ArrayList<>();
+    private static final List<SpinnerOption> vibrationList = new ArrayList<>();
+    private static final List<SpinnerOption> ringTimesList = new ArrayList<>();
+    private static final List<SpinnerOption> ringIntervalList = new ArrayList<>();
 
     {
         alarmTypeList.clear();
@@ -52,6 +55,20 @@ public class AlarmFormActivity extends AppCompatActivity {
         alarmTypeList.add(new SpinnerOption(HolidayAlarmType.ALARM_TYPE, "非工作日"));
         alarmTypeList.add(new SpinnerOption(WeekAlarmType.ALARM_TYPE, "按周"));
         alarmTypeList.add(new SpinnerOption(DateAlarmType.ALARM_TYPE, "按日期"));
+        vibrationList.clear();
+        vibrationList.add(new SpinnerOption("default", "默认震动"));
+        vibrationList.add(new SpinnerOption("none", "无"));
+        ringTimesList.clear();
+        ringTimesList.add(new SpinnerOption("1", "1次"));
+        ringTimesList.add(new SpinnerOption("2", "2次"));
+        ringTimesList.add(new SpinnerOption("3", "3次"));
+        ringTimesList.add(new SpinnerOption("5", "5次"));
+        ringIntervalList.clear();
+        ringIntervalList.add(new SpinnerOption("5", "5分钟"));
+        ringIntervalList.add(new SpinnerOption("10", "10分钟"));
+        ringIntervalList.add(new SpinnerOption("15", "15分钟"));
+        ringIntervalList.add(new SpinnerOption("20", "20分钟"));
+        ringIntervalList.add(new SpinnerOption("30", "30分钟"));
     }
 
     private AlarmViewModel viewModel;
@@ -68,7 +85,9 @@ public class AlarmFormActivity extends AppCompatActivity {
     private EditText alarmNameEditText;
     private SeekBar ringtoneSeekBar;
     private LinearLayout ringtoneSilent;
-    private TextView vibrationTextView, snoozeTextView;
+    private Spinner vibrationSpinner;
+    private Spinner ringTimesSpinner;
+    private Spinner ringIntervalSpinner;
 
     private void populateUiWithAlarm(AlarmEntity originalAlarm) {
         TextView tvFormAlarmTitle = findViewById(R.id.tv_form_alarm_title);
@@ -97,6 +116,31 @@ public class AlarmFormActivity extends AppCompatActivity {
         skipHolidaysSwitch.setChecked(originalBaseAlarmType.getSkipHoliday());
         alarmNameEditText.setText(originalAlarm.getName());
         ringtoneSeekBar.setProgress(originalAlarm.getRingtoneProgress());
+
+        ArrayAdapter<SpinnerOption> vibrationAdapter = (ArrayAdapter<SpinnerOption>) vibrationSpinner.getAdapter();
+        String vibrationSpinnerId = originalAlarm.isVibrator() ? "default" : "none";
+        for (int i = 0; i < vibrationAdapter.getCount(); i++) {
+            if (vibrationSpinnerId.equals(vibrationAdapter.getItem(i).getOptionId())) {
+                vibrationSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        ArrayAdapter<SpinnerOption> ringTimesAdapter = (ArrayAdapter<SpinnerOption>) ringTimesSpinner.getAdapter();
+        for (int i = 0; i < ringTimesAdapter.getCount(); i++) {
+            if (Integer.valueOf(ringTimesAdapter.getItem(i).getOptionId()) == originalAlarm.getRingTimes()) {
+                ringTimesSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        ArrayAdapter<SpinnerOption> ringIntervalAdapter = (ArrayAdapter<SpinnerOption>) ringIntervalSpinner.getAdapter();
+        for (int i = 0; i < ringIntervalAdapter.getCount(); i++) {
+            if (Integer.valueOf(ringIntervalAdapter.getItem(i).getOptionId()) == originalAlarm.getRingInterval()) {
+                ringIntervalSpinner.setSelection(i);
+                break;
+            }
+        }
     }
 
     @SuppressLint({"ResourceAsColor", "MissingInflatedId"})
@@ -140,26 +184,7 @@ public class AlarmFormActivity extends AppCompatActivity {
             }
         });
 
-        ringRuleSpinner = findViewById(R.id.spinner_ring_rule);
-        ArrayAdapter<SpinnerOption> adapter = new ArrayAdapter<>(
-                context,
-                R.layout.custom_spinner_item,
-                alarmTypeList
-        );
-        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
-        ringRuleSpinner.setAdapter(adapter);
-        ringRuleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SpinnerOption selectedOption = (SpinnerOption) parent.getItemAtPosition(position);
-                ringRuleSpinnerSelectHandle(selectedOption.getOptionId());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(context, "必选", Toast.LENGTH_SHORT).show();
-            }
-        });
+        ringRuleSpinner = spinnerInit(context, alarmTypeList, R.id.spinner_ring_rule);
 
         repeatDatesTextView = findViewById(R.id.tv_ring_repeat_dates);
 
@@ -235,8 +260,9 @@ public class AlarmFormActivity extends AppCompatActivity {
             }
         });
 
-        vibrationTextView = findViewById(R.id.tv_vibration);
-        snoozeTextView = findViewById(R.id.tv_snooze);
+        vibrationSpinner = spinnerInit(context, vibrationList, R.id.spinner_vibration);
+        ringTimesSpinner = spinnerInit(context, ringTimesList, R.id.spinner_ring_times);
+        ringIntervalSpinner = spinnerInit(context, ringIntervalList, R.id.spinner_ring_interval);
     }
 
     private void ringRuleSpinnerSelectHandle(String optionId) {
@@ -267,6 +293,14 @@ public class AlarmFormActivity extends AppCompatActivity {
 
         repeatDatesTextView.setText(getNewAlarmEntity().getRepeatStr() + repeatStrNote);
         updateTimeUntilNextRing();
+    }
+
+    private void ringTimesSpinnerSelectHandle(String optionId) {
+        if ("1".equals(optionId)) {
+            ringIntervalSpinner.setVisibility(View.INVISIBLE);
+        } else {
+            ringIntervalSpinner.setVisibility(View.VISIBLE);
+        }
     }
 
     private void dayButtonsClickHandle(boolean isSelected, ToggleButton toggleButton, Context context) {
@@ -367,7 +401,40 @@ public class AlarmFormActivity extends AppCompatActivity {
         String alarmName = alarmNameEditText.getText().toString();
         int ringtoneProgress = ringtoneSeekBar.getProgress();
 
-        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress, false, 3, 2);
+        String vibrationId = ((SpinnerOption) vibrationSpinner.getSelectedItem()).getOptionId();
+        boolean isVibrator = !"none".equals(vibrationId);
+        int ringTimes = Integer.valueOf(((SpinnerOption) ringTimesSpinner.getSelectedItem()).getOptionId());
+        int ringInterval = Integer.valueOf(((SpinnerOption) ringIntervalSpinner.getSelectedItem()).getOptionId());
+        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress, isVibrator, ringTimes, ringInterval);
+    }
+
+    private Spinner spinnerInit(Context context, List<SpinnerOption> spinnerOptionList, int spinnerId) {
+
+        Spinner spinner = findViewById(spinnerId);
+        ArrayAdapter<SpinnerOption> arrayAdapterdapter = new ArrayAdapter<>(
+                context,
+                R.layout.custom_spinner_item,
+                spinnerOptionList
+        );
+        arrayAdapterdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapterdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SpinnerOption selectedOption = (SpinnerOption) parent.getItemAtPosition(position);
+                if (spinnerId == R.id.spinner_ring_rule) {
+                    ringRuleSpinnerSelectHandle(selectedOption.getOptionId());
+                } else if (spinnerId == R.id.spinner_ring_times) {
+                    ringTimesSpinnerSelectHandle(selectedOption.getOptionId());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Toast.makeText(context, "必选", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return spinner;
     }
 
     private class SpinnerOption {

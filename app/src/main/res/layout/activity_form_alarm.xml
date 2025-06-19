@@ -274,7 +274,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="铃声:"
+                    android:text="铃声："
                     android:textSize="16sp" />
 
                 <SeekBar
@@ -302,7 +302,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="铃声:"
+                    android:text="铃声："
                     android:textSize="16sp"
                     android:visibility="invisible" />
 
@@ -326,13 +326,14 @@
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingTop="0dp">
+                android:paddingTop="5dp">
 
                 <TextView
                     android:id="@+id/tv_vibration"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="振动：默认振动"
+                    android:gravity="left"
+                    android:text="震动："
                     android:textSize="16sp" />
 
                 <Spinner
@@ -341,13 +342,34 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_snooze"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:text="稍后提醒：响铃间隔5分钟，响铃次数3次"
-                android:textSize="16sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/tv_ring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="响铃："
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_ring_times"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="49" />
+
+                <Spinner
+                    android:id="@+id/spinner_ring_interval"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="49" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>
