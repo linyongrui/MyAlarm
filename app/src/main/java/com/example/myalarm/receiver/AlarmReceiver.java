@@ -16,6 +16,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         serviceIntent.putExtra("alarmId", alarmId);
         serviceIntent.putExtra("alarmName", intent.getStringExtra("alarmName"));
         serviceIntent.putExtra("ringtoneProgress", intent.getIntExtra("ringtoneProgress", 100));
+        serviceIntent.putExtra("isVibrator", intent.getBooleanExtra("isVibrator", true));
         context.startForegroundService(serviceIntent);
 
         AlarmUtils.setNextAlarm(context,alarmId);

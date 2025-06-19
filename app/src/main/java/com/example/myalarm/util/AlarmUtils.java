@@ -288,6 +288,7 @@ public class AlarmUtils {
         intent.putExtra("alarmId", alarm.getId());
         intent.putExtra("alarmName", alarm.getName());
         intent.putExtra("ringtoneProgress", alarm.getRingtoneProgress());
+        intent.putExtra("isVibrator", alarm.isVibrator());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
                 requestCode,
@@ -394,18 +395,33 @@ public class AlarmUtils {
             @Override
             public void run() {
                 AlarmEntity alarmEntity = alarmDao.getActiveAlarmById(alarmId);
-                String alarmType = alarmEntity == null ? null : alarmEntity.getBaseAlarmType().getType();
-                if (OnceAlarmType.ALARM_TYPE.equals(alarmType)) {
-                    alarmEntity.setDisabled(true);
-                    alarmEntity.setTempDisabled(false);
-                    alarmEntity.setNextTriggerTime(0);
-                    alarmDao.updateAlarmEntity(alarmEntity);
-                } else {
+                if (alarmEntity == null) {
+                    return;
+                }
+                alarmEntity.setAlreadyRingTimes(alarmEntity.getAlreadyRingTimes() + 1);
+                if (alarmEntity.getAlreadyRingTimes() < alarmEntity.getRingTimes()) {
                     int newRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), true);
                     alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
-                    alarmEntity.setNextTriggerTime(getNextTriggerTime(alarmEntity));
+                    alarmEntity.setNextTriggerTime(alarmEntity.getNextTriggerTime() + alarmEntity.getRingInterval() * 60000L);
                     alarmDao.updateAlarmEntity(alarmEntity);
                     setAlarm(context, alarmEntity, newRequestCode);
+
+                } else {
+                    String alarmType = alarmEntity.getBaseAlarmType().getType();
+                    alarmEntity.setAlreadyRingTimes(0);
+                    if (OnceAlarmType.ALARM_TYPE.equals(alarmType)) {
+                        alarmEntity.setDisabled(true);
+                        alarmEntity.setTempDisabled(false);
+                        alarmEntity.setNextTriggerTime(0);
+                        alarmDao.updateAlarmEntity(alarmEntity);
+                    } else {
+                        int newRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), true);
+                        alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
+                        alarmEntity.setNextTriggerTime(getNextTriggerTime(alarmEntity));
+                        alarmDao.updateAlarmEntity(alarmEntity);
+                        setAlarm(context, alarmEntity, newRequestCode);
+                    }
+
                 }
             }
         }).start();

@@ -367,7 +367,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         String alarmName = alarmNameEditText.getText().toString();
         int ringtoneProgress = ringtoneSeekBar.getProgress();
 
-        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress);
+        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress, false, 3, 2);
     }
 
     private class SpinnerOption {

@@ -54,9 +54,12 @@ public class RingtoneService extends Service {
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
-        VibrationEffect vibrationEffect = VibrationEffect.createWaveform(VIBRATOR_PATTERN, 0);
-        if (vibrator.hasVibrator()) {
-            vibrator.vibrate(vibrationEffect);
+        boolean isVibrator = intent.getBooleanExtra("isVibrator", true);
+        if (isVibrator) {
+            VibrationEffect vibrationEffect = VibrationEffect.createWaveform(VIBRATOR_PATTERN, 0);
+            if (vibrator.hasVibrator()) {
+                vibrator.vibrate(vibrationEffect);
+            }
         }
 
         startActivity(fullScreenIntent);

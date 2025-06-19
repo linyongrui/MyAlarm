@@ -16,6 +16,10 @@ public class AlarmEntity {
     private BaseAlarmType baseAlarmType;
     private LocalTime time;
     private int ringtoneProgress;
+    private boolean isVibrator;
+    private int ringTimes;
+    private int alreadyRingTimes;
+    private int ringInterval;
     private boolean disabled;
     private boolean tempDisabled;
     private int requestCodeSeq;
@@ -26,14 +30,18 @@ public class AlarmEntity {
 
     }
 
-    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress) {
+    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress, boolean isVibrator, int ringTimes, int ringInterval) {
         this.name = name;
         this.baseAlarmType = baseAlarmType;
         this.time = time;
+        this.ringtoneProgress = ringtoneProgress;
+        this.isVibrator = isVibrator;
+        this.ringTimes = ringTimes;
+        this.ringInterval = ringInterval;
+        this.alreadyRingTimes = 0;
+        this.requestCodeSeq = 0;
         this.disabled = false;
         this.tempDisabled = false;
-        this.requestCodeSeq = 0;
-        this.ringtoneProgress = ringtoneProgress;
         if (this.time != null) {
             this.time.withSecond(0).withNano(0);
         }
@@ -77,6 +85,38 @@ public class AlarmEntity {
 
     public void setRingtoneProgress(int ringtoneProgress) {
         this.ringtoneProgress = ringtoneProgress;
+    }
+
+    public boolean isVibrator() {
+        return isVibrator;
+    }
+
+    public void setVibrator(boolean vibrator) {
+        isVibrator = vibrator;
+    }
+
+    public int getRingTimes() {
+        return ringTimes;
+    }
+
+    public void setRingTimes(int ringTimes) {
+        this.ringTimes = ringTimes;
+    }
+
+    public int getAlreadyRingTimes() {
+        return alreadyRingTimes;
+    }
+
+    public void setAlreadyRingTimes(int alreadyRingTimes) {
+        this.alreadyRingTimes = alreadyRingTimes;
+    }
+
+    public int getRingInterval() {
+        return ringInterval;
+    }
+
+    public void setRingInterval(int ringInterval) {
+        this.ringInterval = ringInterval;
     }
 
     public boolean isDisabled() {
