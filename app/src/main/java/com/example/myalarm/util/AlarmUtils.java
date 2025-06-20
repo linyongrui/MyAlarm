@@ -286,7 +286,7 @@ public class AlarmUtils {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("alarmId", alarm.getId());
-        intent.putExtra("alarmName", alarm.getName());
+        intent.putExtra("alarmName", alarm.getName() == null || alarm.getName().isBlank() ? "闹钟" : alarm.getName());
         intent.putExtra("ringtoneProgress", alarm.getRingtoneProgress());
         intent.putExtra("isVibrator", alarm.isVibrator());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
@@ -308,6 +308,11 @@ public class AlarmUtils {
                 PendingIntent.FLAG_IMMUTABLE
         );
         alarmManager.cancel(pendingIntent);
+    }
+
+    public static void cancelAllAlarm(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancelAll();
     }
 
     public static void saveAlarm(Context context, AlarmEntity newAlarmEntity) {
@@ -386,6 +391,16 @@ public class AlarmUtils {
                     int originalRequestCode = getRequestCode(alarmEntity.getId(), alarmEntity.getRequestCodeSeq(), false);
                     cancelAlarm(context, originalRequestCode);
                 }
+            }
+        }).start();
+    }
+
+    public static void deleteAllAlarms(Context context) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                alarmDao.deleteAllAlarm();
+                cancelAllAlarm(context);
             }
         }).start();
     }

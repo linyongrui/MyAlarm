@@ -3,12 +3,11 @@ package com.example.myalarm.activity;
 import android.app.KeyguardManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -31,23 +30,21 @@ public class AlarmRingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
 
-        // 设置窗口标志
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        // Android 12+：请求解除锁屏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true);
-            setTurnScreenOn(true);
+        WindowInsetsController controller = getWindow().getInsetsController();
+        controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
 
-            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-            if (keyguardManager != null && keyguardManager.isKeyguardLocked()) {
-                keyguardManager.requestDismissKeyguard(this, null);
-            }
+        setShowWhenLocked(true);
+        setTurnScreenOn(true);
+
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+        if (keyguardManager != null && keyguardManager.isKeyguardLocked()) {
+            keyguardManager.requestDismissKeyguard(this, null);
         }
 
         setContentView(R.layout.activity_ring);

@@ -36,4 +36,7 @@ public interface AlarmDao {
 
     @Query("DELETE FROM AlarmEntity WHERE ID in(:alarmIds)")
     void deleteAlarmByIds(Set<Long> alarmIds);
+
+    @Query("DELETE FROM AlarmEntity")
+    void deleteAllAlarm();
 }

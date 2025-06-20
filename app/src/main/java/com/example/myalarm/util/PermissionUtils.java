@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,19 +24,16 @@ import androidx.core.content.ContextCompat;
 
 public class PermissionUtils {
     public static boolean permissionCheck(Activity activity, String[] permissions, int requestCode) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int permissionGranted = PackageManager.PERMISSION_GRANTED;
-            for (String permission : permissions) {
-                permissionGranted = ContextCompat.checkSelfPermission(activity.getApplicationContext(), permission);
-                if (permissionGranted != PackageManager.PERMISSION_GRANTED) {
-                    break;
-                }
-            }
+        int permissionGranted = PackageManager.PERMISSION_GRANTED;
+        for (String permission : permissions) {
+            permissionGranted = ContextCompat.checkSelfPermission(activity.getApplicationContext(), permission);
             if (permissionGranted != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, permissions, requestCode);
-                return false;
+                break;
             }
+        }
+        if (permissionGranted != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, permissions, requestCode);
+            return false;
         }
         return true;
     }
@@ -86,15 +81,14 @@ public class PermissionUtils {
 
     public static View overlayPermissionCheckWithResource(Context context, ActivityResultLauncher mDrawOverAppsLauncher, Integer resource) {
         View view = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(context)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + context.getPackageName()));
-                mDrawOverAppsLauncher.launch(intent);
-            } else {
-                if (resource != null) {
-                    view = showFloatingWindow(context, resource);
-                }
+
+        if (!Settings.canDrawOverlays(context)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + context.getPackageName()));
+            mDrawOverAppsLauncher.launch(intent);
+        } else {
+            if (resource != null) {
+                view = showFloatingWindow(context, resource);
             }
         }
         return view;
@@ -102,21 +96,13 @@ public class PermissionUtils {
 
     public static View showFloatingWindow(Context context, int resource) {
         WindowManager.LayoutParams params;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-        } else {
-            params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-        }
+
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT);
 
         // 设置悬浮窗的位置
         params.gravity = Gravity.TOP | Gravity.START; // 例如，设置在屏幕左上角

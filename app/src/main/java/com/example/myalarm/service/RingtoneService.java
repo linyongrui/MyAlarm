@@ -9,11 +9,9 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
@@ -87,14 +85,10 @@ public class RingtoneService extends Service {
 
     private MediaPlayer createMediaPlayer(Context context) {
         MediaPlayer mediaPlayer = new MediaPlayer();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .build());
-        } else {
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-        }
+        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .build());
 
         try {
             mediaPlayer.setDataSource(context, RINGTONE_DEFAULT_URI);
@@ -124,15 +118,15 @@ public class RingtoneService extends Service {
 
     private Intent foregroundNotification(Intent intent) {
         String channelId = "alarm_channel";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    channelId, "Alarm Notifications", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Alarm full screen");
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) manager.createNotificationChannel(channel);
-        }
+
+        NotificationChannel channel = new NotificationChannel(
+                channelId, "Alarm Notifications", NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription("Alarm full screen");
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        if (manager != null) manager.createNotificationChannel(channel);
+
         Intent fullScreenIntent = new Intent(this, AlarmRingActivity.class);
         fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);

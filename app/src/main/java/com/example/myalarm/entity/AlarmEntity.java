@@ -26,10 +26,6 @@ public class AlarmEntity {
     private long nextTriggerTime;
     private long preTriggerTime;
 
-    public AlarmEntity() {
-
-    }
-
     public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress, boolean isVibrator, int ringTimes, int ringInterval) {
         this.name = name;
         this.baseAlarmType = baseAlarmType;

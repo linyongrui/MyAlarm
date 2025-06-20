@@ -72,8 +72,13 @@ public class BackupUtils {
                 }.getType();
                 List<AlarmEntity> alarms = gson.fromJson(json, listType);
 
+                AlarmUtils.deleteAllAlarms(context);
                 for (AlarmEntity alarmEntity : alarms) {
-                    AlarmUtils.saveAlarm(context, alarmEntity); // 覆盖旧记录前可先 dao.clear()
+                    alarmEntity.setId(0);
+                    alarmEntity.setRequestCodeSeq(0);
+                    alarmEntity.setAlreadyRingTimes(0);
+                    alarmEntity.setNextTriggerTime(0);
+                    AlarmUtils.saveAlarm(context, alarmEntity);
                 }
 
                 showToast(context, "导入成功");
