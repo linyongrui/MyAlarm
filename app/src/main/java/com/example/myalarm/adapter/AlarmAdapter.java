@@ -129,7 +129,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
     private void alarmSwitchStyleHandle(AlarmViewHolder holder, AlarmEntity alarmEntity, boolean recalculate) {
         boolean disabled = alarmEntity.isDisabled();
         boolean tempDisabled = alarmEntity.isTempDisabled();
-        long preTriggerTime = alarmEntity.getPreTriggerTime();
+        long tempDisableTriggerTime = alarmEntity.getTempDisableTriggerTime();
         long nextTriggerTime = alarmEntity.getNextTriggerTime();
         int colorGray = holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null);
         int colorBlack = holder.alarmSwitch.getContext().getResources().getColor(R.color.black, null);
@@ -142,14 +142,14 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         } else {
             if (recalculate) {
                 if (tempDisabled) {
-                    preTriggerTime = nextTriggerTime;
+                    tempDisableTriggerTime = nextTriggerTime;
                     nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
                 } else {
-                    preTriggerTime = 0;
+                    tempDisableTriggerTime = 0;
                     nextTriggerTime = AlarmUtils.getNextTriggerTime(alarmEntity);
                 }
             }
-            LocalDate preTriggerDate = DateTimeUtils.long2LocalDateTime(preTriggerTime).toLocalDate();
+            LocalDate preTriggerDate = DateTimeUtils.long2LocalDateTime(tempDisableTriggerTime).toLocalDate();
             LocalDate nextTriggerDate = DateTimeUtils.long2LocalDateTime(nextTriggerTime).toLocalDate();
             String preDateStr = DateTimeUtils.getDateStr(preTriggerDate);
             String nextDateStr = DateTimeUtils.getDateStr(nextTriggerDate);

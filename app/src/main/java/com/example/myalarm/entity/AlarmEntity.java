@@ -24,7 +24,7 @@ public class AlarmEntity {
     private boolean tempDisabled;
     private int requestCodeSeq;
     private long nextTriggerTime;
-    private long preTriggerTime;
+    private long tempDisableTriggerTime;
 
     public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress, boolean isVibrator, int ringTimes, int ringInterval) {
         this.name = name;
@@ -147,12 +147,12 @@ public class AlarmEntity {
         this.nextTriggerTime = nextTriggerTime;
     }
 
-    public long getPreTriggerTime() {
-        return preTriggerTime;
+    public long getTempDisableTriggerTime() {
+        return tempDisableTriggerTime;
     }
 
-    public void setPreTriggerTime(long preTriggerTime) {
-        this.preTriggerTime = preTriggerTime;
+    public void setTempDisableTriggerTime(long tempDisableTriggerTime) {
+        this.tempDisableTriggerTime = tempDisableTriggerTime;
     }
 
     public String getRepeatStr() {

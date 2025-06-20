@@ -342,20 +342,20 @@ public class AlarmUtils {
                 int originalRequestCode = getRequestCode(alarmId, originalAlarmEntity.getRequestCodeSeq(), false);
                 int newRequestCode = getRequestCode(alarmId, originalAlarmEntity.getRequestCodeSeq(), true);
                 if (disabled) {
-                    originalAlarmEntity.setPreTriggerTime(0);
+                    originalAlarmEntity.setTempDisableTriggerTime(0);
                     originalAlarmEntity.setNextTriggerTime(0);
                     cancelAlarm(context, originalRequestCode);
 
                 } else if (tempDisabled) {
                     cancelAlarm(context, originalRequestCode);
-                    originalAlarmEntity.setPreTriggerTime(originalAlarmEntity.getNextTriggerTime());
+                    originalAlarmEntity.setTempDisableTriggerTime(originalAlarmEntity.getNextTriggerTime());
                     originalAlarmEntity.setNextTriggerTime(getNextTriggerTime(originalAlarmEntity));
                     originalAlarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
                     setAlarm(context, originalAlarmEntity, newRequestCode);
 
                 } else {
                     cancelAlarm(context, originalRequestCode);
-                    originalAlarmEntity.setPreTriggerTime(0);
+                    originalAlarmEntity.setTempDisableTriggerTime(0);
                     originalAlarmEntity.setNextTriggerTime(getNextTriggerTime(originalAlarmEntity));
                     originalAlarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
                     setAlarm(context, originalAlarmEntity, newRequestCode);

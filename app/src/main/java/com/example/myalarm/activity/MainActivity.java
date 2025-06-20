@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.main_delete_header).setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
             findViewById(R.id.toolbarLayout).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
             findViewById(R.id.addAlarmButton).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
+            findViewById(R.id.ll_export_import).setVisibility(multiSelectMode ? View.GONE : View.VISIBLE);
         });
         findViewById(R.id.main_btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
