@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         android:text="08:00"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="30dp"
         android:textSize="80sp" />
 
     <!-- 日期显示 -->
@@ -52,7 +52,44 @@
         android:text="关闭闹钟"
         android:textSize="20sp" />
 
-    <!-- 关闭闹钟提示文字 -->
+    <LinearLayout
+        android:id="@+id/ll_dismiss_all_calculator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_dismiss_all_expression"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/et_dismiss_all_result"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/tv_dismiss_all_expression"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@id/tv_dismiss_all_expression"
+            android:hint="   "
+            android:inputType="number"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_dismiss_all_confirm"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/et_dismiss_all_result"
+            android:text="确定"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_dismiss_all"
         android:layout_width="wrap_content"

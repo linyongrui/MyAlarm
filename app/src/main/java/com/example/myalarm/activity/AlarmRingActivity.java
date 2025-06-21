@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,12 +26,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Random;
 
 public class AlarmRingActivity extends AppCompatActivity {
 
     private Button dismissOnceButton;
-    private TextView dismissAllTextView;
     private CountDownTimer countDownTimer;
+    private boolean isShowdismissAllLinearLayout = false;
+    private int dismissAllResult = -999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,26 +80,68 @@ public class AlarmRingActivity extends AppCompatActivity {
         dismissOnceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent serviceIntent = new Intent(getApplicationContext(), RingtoneService.class);
+                Intent serviceIntent = new Intent(context, RingtoneService.class);
                 stopService(serviceIntent);
                 AlarmUtils.setNextAlarm(context, alarmId, isLastRing);
                 finish();
             }
         });
 
-        dismissAllTextView = findViewById(R.id.tv_dismiss_all);
+        LinearLayout dismissAllLinearLayout = findViewById(R.id.ll_dismiss_all_calculator);
+
+        TextView dismissAllTextView = findViewById(R.id.tv_dismiss_all);
         dismissAllTextView.setVisibility(isLastRing ? View.GONE : View.VISIBLE);
         dismissAllTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent serviceIntent = new Intent(getApplicationContext(), RingtoneService.class);
-                stopService(serviceIntent);
-                AlarmUtils.setNextAlarm(context, alarmId, true);
-                finish();
+                TextView dismissAllExpressionTextView = findViewById(R.id.tv_dismiss_all_expression);
+                Object[] dismissAllExpression = getDismissAllExpression();
+                dismissAllExpressionTextView.setText(dismissAllExpression[0].toString());
+                dismissAllResult = Integer.valueOf(dismissAllExpression[1].toString());
+
+                isShowdismissAllLinearLayout = !isShowdismissAllLinearLayout;
+                dismissAllLinearLayout.setVisibility(isShowdismissAllLinearLayout ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        EditText dismissAllResultEditText = findViewById(R.id.et_dismiss_all_result);
+        TextView dismissAllTextConfirm = findViewById(R.id.tv_dismiss_all_confirm);
+        dismissAllTextConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean calculatorResultCorrect = false;
+                try {
+                    int calculatorResult = Integer.valueOf(dismissAllResultEditText.getText().toString());
+                    if (calculatorResult != dismissAllResult) {
+                        Toast.makeText(context, "计算结果不对！", Toast.LENGTH_SHORT).show();
+                    } else {
+                        calculatorResultCorrect = true;
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(context, "计算结果不对！", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                if (calculatorResultCorrect) {
+                    Intent serviceIntent = new Intent(context, RingtoneService.class);
+                    stopService(serviceIntent);
+                    AlarmUtils.setNextAlarm(context, alarmId, true);
+                    finish();
+                }
             }
         });
 
         startAutoStopTimer();
+    }
+
+    private Object[] getDismissAllExpression() {
+        Object[] dismissAllExpression = new Object[2];
+        Random random = new Random();
+        int number1 = random.nextInt(100);
+        int number2 = random.nextInt(100);
+        int number3 = random.nextInt(number1 + number2);
+        dismissAllExpression[0] = number1 + " + " + number2 + " - " + number3 + " =";
+        dismissAllExpression[1] = number1 + number2 - number3;
+        return dismissAllExpression;
     }
 
     private void startAutoStopTimer() {
