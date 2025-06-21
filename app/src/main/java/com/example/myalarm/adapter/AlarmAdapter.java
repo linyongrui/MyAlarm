@@ -3,6 +3,7 @@ package com.example.myalarm.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,9 +132,11 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         boolean tempDisabled = alarmEntity.isTempDisabled();
         long tempDisableTriggerTime = alarmEntity.getTempDisableTriggerTime();
         long nextTriggerTime = alarmEntity.getNextTriggerTime();
-        int colorGray = holder.alarmSwitch.getContext().getResources().getColor(R.color.gray, null);
-        int colorBlack = holder.alarmSwitch.getContext().getResources().getColor(R.color.black, null);
-        int colorGrayBlack = holder.alarmSwitch.getContext().getResources().getColor(R.color.gray_black, null);
+
+        Resources resources = holder.alarmSwitch.getContext().getResources();
+        int colorGray = resources.getColor(R.color.gray, null);
+        int colorBlack = resources.getColor(android.R.color.black, null);
+        int colorGrayBlack = resources.getColor(R.color.gray_black, null);
         StringBuilder nextTriggerDateStr = new StringBuilder();
         if (disabled) {
             holder.timeTextView.setTextColor(colorGray);
@@ -203,6 +206,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         TextView closeRepeatButton = dialogView.findViewById(R.id.btn_close_repeat);
         TextView cancelButton = dialogView.findViewById(R.id.btn_cancel);
 
+        closeOnceButton.setText(tempDisableDesc);
         closeOnceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

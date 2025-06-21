@@ -120,11 +120,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="70dp"
         android:contentDescription="@string/new_alarm_cn"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="@color/colorPrimary"
+        app:shapeAppearanceOverlay="@style/FabCircleShape"
         app:elevation="6dp"
         app:fabSize="auto"
-        app:rippleColor="@color/gray" />
+        app:rippleColor="@color/colorPrimary_light" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

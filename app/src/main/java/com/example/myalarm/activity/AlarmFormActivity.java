@@ -56,8 +56,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         alarmTypeList.add(new SpinnerOption(WeekAlarmType.ALARM_TYPE, "按周"));
         alarmTypeList.add(new SpinnerOption(DateAlarmType.ALARM_TYPE, "按日期"));
         vibrationList.clear();
-        vibrationList.add(new SpinnerOption("default", "默认震动"));
-        vibrationList.add(new SpinnerOption("none", "无"));
+        vibrationList.add(new SpinnerOption("default", "默认"));
         ringTimesList.clear();
         ringTimesList.add(new SpinnerOption("1", "1次"));
         ringTimesList.add(new SpinnerOption("2", "2次"));
@@ -85,9 +84,12 @@ public class AlarmFormActivity extends AppCompatActivity {
     private EditText alarmNameEditText;
     private SeekBar ringtoneSeekBar;
     private LinearLayout ringtoneSilent;
-    private Spinner vibrationSpinner;
+    private Switch vibrationSwitch;
+    private TextView vibrationModeTitle;
+    private Spinner vibrationModeSpinner;
     private Spinner ringTimesSpinner;
     private Spinner ringIntervalSpinner;
+    private TextView ringIntervalSpinnerTitle;
 
     private void populateUiWithAlarm(AlarmEntity originalAlarm) {
         TextView tvFormAlarmTitle = findViewById(R.id.tv_form_alarm_title);
@@ -117,11 +119,12 @@ public class AlarmFormActivity extends AppCompatActivity {
         alarmNameEditText.setText(originalAlarm.getName());
         ringtoneSeekBar.setProgress(originalAlarm.getRingtoneProgress());
 
-        ArrayAdapter<SpinnerOption> vibrationAdapter = (ArrayAdapter<SpinnerOption>) vibrationSpinner.getAdapter();
-        String vibrationSpinnerId = originalAlarm.isVibrator() ? "default" : "none";
+        vibrationSwitch.setChecked(originalAlarm.isVibrator());
+        ArrayAdapter<SpinnerOption> vibrationAdapter = (ArrayAdapter<SpinnerOption>) vibrationModeSpinner.getAdapter();
+        String vibrationModeSpinnerId = originalAlarm.isVibrator() ? "default" : "none";
         for (int i = 0; i < vibrationAdapter.getCount(); i++) {
-            if (vibrationSpinnerId.equals(vibrationAdapter.getItem(i).getOptionId())) {
-                vibrationSpinner.setSelection(i);
+            if (vibrationModeSpinnerId.equals(vibrationAdapter.getItem(i).getOptionId())) {
+                vibrationModeSpinner.setSelection(i);
                 break;
             }
         }
@@ -260,9 +263,25 @@ public class AlarmFormActivity extends AppCompatActivity {
             }
         });
 
-        vibrationSpinner = spinnerInit(context, vibrationList, R.id.spinner_vibration);
+        vibrationSwitch = findViewById(R.id.vibrationSwitch);
+        vibrationModeTitle = findViewById(R.id.tv_vibrationMode);
+        vibrationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    vibrationModeSpinner.setVisibility(View.VISIBLE);
+                    vibrationModeTitle.setVisibility(View.VISIBLE);
+                } else {
+                    vibrationModeSpinner.setVisibility(View.INVISIBLE);
+                    vibrationModeTitle.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        vibrationModeSpinner = spinnerInit(context, vibrationList, R.id.spinner_vibration);
         ringTimesSpinner = spinnerInit(context, ringTimesList, R.id.spinner_ring_times);
         ringIntervalSpinner = spinnerInit(context, ringIntervalList, R.id.spinner_ring_interval);
+        ringIntervalSpinnerTitle = findViewById(R.id.spinner_ring_interval_title);
     }
 
     private void ringRuleSpinnerSelectHandle(String optionId) {
@@ -298,14 +317,16 @@ public class AlarmFormActivity extends AppCompatActivity {
     private void ringTimesSpinnerSelectHandle(String optionId) {
         if ("1".equals(optionId)) {
             ringIntervalSpinner.setVisibility(View.INVISIBLE);
+            ringIntervalSpinnerTitle.setVisibility(View.INVISIBLE);
         } else {
             ringIntervalSpinner.setVisibility(View.VISIBLE);
+            ringIntervalSpinnerTitle.setVisibility(View.VISIBLE);
         }
     }
 
     private void dayButtonsClickHandle(boolean isSelected, ToggleButton toggleButton, Context context) {
         toggleButton.setTextColor(
-                isSelected ? ContextCompat.getColorStateList(context, R.color.white) : ContextCompat.getColorStateList(context, R.color.black)
+                isSelected ? ContextCompat.getColorStateList(context, android.R.color.white) : ContextCompat.getColorStateList(context, android.R.color.black)
         );
 
         repeatDatesTextView.setText(getNewAlarmEntity().getRepeatStr());
@@ -400,9 +421,8 @@ public class AlarmFormActivity extends AppCompatActivity {
         baseAlarmType.setSkipHoliday(skipHolidaysSwitch.isChecked());
         String alarmName = alarmNameEditText.getText().toString();
         int ringtoneProgress = ringtoneSeekBar.getProgress();
-
-        String vibrationId = ((SpinnerOption) vibrationSpinner.getSelectedItem()).getOptionId();
-        boolean isVibrator = !"none".equals(vibrationId);
+        boolean isVibrator = vibrationSwitch.isChecked();
+        String vibrationMode = ((SpinnerOption) vibrationModeSpinner.getSelectedItem()).getOptionId();
         int ringTimes = Integer.valueOf(((SpinnerOption) ringTimesSpinner.getSelectedItem()).getOptionId());
         int ringInterval = Integer.valueOf(((SpinnerOption) ringIntervalSpinner.getSelectedItem()).getOptionId());
         return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress, isVibrator, ringTimes, ringInterval);
