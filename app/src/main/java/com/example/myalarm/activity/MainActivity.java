@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myalarm.Constant;
 import com.example.myalarm.R;
 import com.example.myalarm.adapter.AlarmAdapter;
 import com.example.myalarm.dao.HolidayDao;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         alarmAdapter = new AlarmAdapter();
         alarmAdapter.setOnItemClickListener(alarmEntity -> {
             Intent intent = new Intent(this, AlarmFormActivity.class);
-            intent.putExtra("alarm_id", alarmEntity.getId());
+            intent.putExtra(Constant.INTENT_EXTRA_ALARM_ID, alarmEntity.getId());
             startActivity(intent);
         });
         alarmRecyclerView.setAdapter(alarmAdapter);
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode,  Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data == null || resultCode != RESULT_OK) return;
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.myalarm.Constant;
 import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.alarmtype.DateAlarmType;
 import com.example.myalarm.alarmtype.EveryDayAlarmType;
@@ -285,10 +286,13 @@ public class AlarmUtils {
     public static void setAlarm(Context context, AlarmEntity alarm, int requestCode) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.putExtra("alarmId", alarm.getId());
-        intent.putExtra("alarmName", alarm.getName() == null || alarm.getName().isBlank() ? "闹钟" : alarm.getName());
-        intent.putExtra("ringtoneProgress", alarm.getRingtoneProgress());
-        intent.putExtra("isVibrator", alarm.isVibrator());
+        intent.putExtra(Constant.INTENT_EXTRA_ALARM_ID, alarm.getId());
+        intent.putExtra(Constant.INTENT_EXTRA_ALARM_NAME, alarm.getName() == null || alarm.getName().isBlank() ? "闹钟" : alarm.getName());
+        intent.putExtra(Constant.INTENT_EXTRA_RINGTONE_PROGRESS, alarm.getRingtoneProgress());
+        intent.putExtra(Constant.INTENT_EXTRA_IS_VIBRATOR, alarm.isVibrator());
+        intent.putExtra(Constant.INTENT_EXTRA_IS_LAST_RING, alarm.getRingTimes() == 1
+                || alarm.getRingTimes() - alarm.getAlreadyRingTimes() == 1);
+        intent.putExtra(Constant.INTENT_EXTRA_RING_INTERVAL, alarm.getRingInterval());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
                 requestCode,
@@ -405,7 +409,7 @@ public class AlarmUtils {
         }).start();
     }
 
-    public static void setNextAlarm(Context context, long alarmId) {
+    public static void setNextAlarm(Context context, long alarmId, boolean isDismissAll) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -413,11 +417,11 @@ public class AlarmUtils {
                 if (alarmEntity == null) {
                     return;
                 }
-                alarmEntity.setAlreadyRingTimes(alarmEntity.getAlreadyRingTimes() + 1);
-                if (alarmEntity.getAlreadyRingTimes() < alarmEntity.getRingTimes()) {
+                if (!isDismissAll) {
                     int newRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), true);
                     alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
                     alarmEntity.setNextTriggerTime(alarmEntity.getNextTriggerTime() + alarmEntity.getRingInterval() * 60000L);
+                    alarmEntity.setAlreadyRingTimes(alarmEntity.getAlreadyRingTimes() + 1);
                     alarmDao.updateAlarmEntity(alarmEntity);
                     setAlarm(context, alarmEntity, newRequestCode);
 

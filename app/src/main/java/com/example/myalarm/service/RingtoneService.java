@@ -20,6 +20,7 @@ import android.os.Vibrator;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.example.myalarm.Constant;
 import com.example.myalarm.R;
 import com.example.myalarm.activity.AlarmRingActivity;
 
@@ -47,12 +48,12 @@ public class RingtoneService extends Service {
         acquireWakeLock();
         Intent fullScreenIntent = foregroundNotification(intent);
 
-        float ringtoneVolume = (float) intent.getIntExtra("ringtoneProgress", 100) / 100;
+        float ringtoneVolume = (float) intent.getIntExtra(Constant.INTENT_EXTRA_RINGTONE_PROGRESS, 100) / 100;
         mediaPlayer.setVolume(ringtoneVolume, ringtoneVolume);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
-        boolean isVibrator = intent.getBooleanExtra("isVibrator", true);
+        boolean isVibrator = intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_VIBRATOR, true);
         if (isVibrator) {
             VibrationEffect vibrationEffect = VibrationEffect.createWaveform(VIBRATOR_PATTERN, 0);
             if (vibrator.hasVibrator()) {
@@ -130,12 +131,16 @@ public class RingtoneService extends Service {
         Intent fullScreenIntent = new Intent(this, AlarmRingActivity.class);
         fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        fullScreenIntent.putExtra("alarmName", intent.getStringExtra("alarmName"));
+        fullScreenIntent.putExtra(Constant.INTENT_EXTRA_ALARM_ID, intent.getLongExtra(Constant.INTENT_EXTRA_ALARM_ID, -1));
+        String alarmName = intent.getStringExtra(Constant.INTENT_EXTRA_ALARM_NAME);
+        fullScreenIntent.putExtra(Constant.INTENT_EXTRA_ALARM_NAME, alarmName);
+        fullScreenIntent.putExtra(Constant.INTENT_EXTRA_IS_LAST_RING, intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_LAST_RING, false));
+        fullScreenIntent.putExtra(Constant.INTENT_EXTRA_RING_INTERVAL, intent.getIntExtra(Constant.INTENT_EXTRA_RING_INTERVAL, 5));
 
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(
                 this, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE);
         Notification notification = new NotificationCompat.Builder(this, channelId)
-                .setContentTitle("闹钟响铃")
+                .setContentTitle(alarmName)
                 .setContentText("正在响铃...")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

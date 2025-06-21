@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myalarm.Constant;
 import com.example.myalarm.R;
 import com.example.myalarm.alarmtype.BaseAlarmType;
 import com.example.myalarm.alarmtype.DateAlarmType;
@@ -153,7 +154,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_form_alarm);
 
-        long alarmId = getIntent().getLongExtra("alarm_id", -1);
+        long alarmId = getIntent().getLongExtra(Constant.INTENT_EXTRA_ALARM_ID, -1);
         viewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
         viewModel.getAlarmById(alarmId).observe(this, originalAlarm -> {
             if (originalAlarm != null) {

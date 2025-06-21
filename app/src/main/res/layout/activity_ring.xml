@@ -41,7 +41,7 @@
         android:textSize="30sp" />
 
     <Button
-        android:id="@+id/ring_stop_button"
+        android:id="@+id/btn_dismiss_once"
         android:layout_width="200dp"
         android:layout_height="60dp"
         android:layout_below="@id/ring_alarm_label"
@@ -54,13 +54,13 @@
 
     <!-- 关闭闹钟提示文字 -->
     <TextView
-        android:id="@+id/ring_dismiss_label"
+        android:id="@+id/tv_dismiss_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
-        android:text="上滑5分钟后提醒"
+        android:text="稍后不再提醒"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
 
