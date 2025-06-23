@@ -292,7 +292,9 @@ public class AlarmUtils {
         intent.putExtra(Constant.INTENT_EXTRA_IS_VIBRATOR, alarm.isVibrator());
         intent.putExtra(Constant.INTENT_EXTRA_IS_LAST_RING, alarm.getRingTimes() == 1
                 || alarm.getRingTimes() - alarm.getAlreadyRingTimes() == 1);
+        intent.putExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, alarm.getAlreadyRingTimes());
         intent.putExtra(Constant.INTENT_EXTRA_RING_INTERVAL, alarm.getRingInterval());
+        intent.putExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, alarm.isOversleepPrevent());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
                 requestCode,

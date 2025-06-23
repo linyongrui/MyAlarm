@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,8 +31,9 @@ public class AlarmRingActivity extends AppCompatActivity {
 
     private Button dismissOnceButton;
     private CountDownTimer countDownTimer;
-    private boolean isShowdismissAllLinearLayout = false;
+    private boolean isShowCalculateLinearLayout = false;
     private int dismissAllResult = -999;
+    private boolean isDismissAll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,66 +71,113 @@ public class AlarmRingActivity extends AppCompatActivity {
         String alarmName = intent.getStringExtra(Constant.INTENT_EXTRA_ALARM_NAME);
         boolean isLastRing = intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_LAST_RING, false);
         int ringInterval = intent.getIntExtra(Constant.INTENT_EXTRA_RING_INTERVAL, 5);
+        boolean isOversleepPrevent = intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, false);
+        int alreadRingTimes = intent.getIntExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, 0);
 
-        TextView alarmLabel = findViewById(R.id.ring_alarm_label);
-        alarmLabel.setText(alarmName == null || alarmName.isBlank() ? "闹钟" : alarmName);
+        TextView alarmNameTextView = findViewById(R.id.ring_alarm_name);
+        alarmNameTextView.setText(alarmName == null || alarmName.isBlank() ? "闹钟" : alarmName);
+        TextView alarmNoteTextView = findViewById(R.id.ring_alarm_note);
+        alarmNoteTextView.setText(isLastRing ? "最后一次提醒" : "第" + (alreadRingTimes + 1) + "次提醒");
+
+        LinearLayout calculateLinearLayout = findViewById(R.id.ll_calculate);
+        TextView calculateNote = findViewById(R.id.tv_calculate_note);
+        EditText calculateResultEditText = findViewById(R.id.et_calculate_result);
 
         dismissOnceButton = findViewById(R.id.btn_dismiss_once);
         dismissOnceButton.setText(isLastRing ? "关闭闹钟" : ringInterval + "分钟后提醒");
         dismissOnceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent serviceIntent = new Intent(context, RingtoneService.class);
-                stopService(serviceIntent);
-                AlarmUtils.setNextAlarm(context, alarmId, isLastRing);
-                finish();
+                if (isOversleepPrevent) {
+                    TextView calculateExpressionTextView = findViewById(R.id.tv_calculate_expression);
+                    Object[] dismissAllExpression = getDismissAllExpression();
+                    calculateExpressionTextView.setText(dismissAllExpression[0].toString());
+                    dismissAllResult = Integer.valueOf(dismissAllExpression[1].toString());
+
+                    isShowCalculateLinearLayout = !isShowCalculateLinearLayout;
+                    if (isShowCalculateLinearLayout) {
+                        calculateLinearLayout.setVisibility(View.VISIBLE);
+                        calculateNote.setVisibility(View.VISIBLE);
+                        calculateResultEditText.setText("");
+                        calculateNote.setText("请输入结果，点击确定");
+
+                    } else {
+                        calculateLinearLayout.setVisibility(View.INVISIBLE);
+                        calculateNote.setVisibility(View.INVISIBLE);
+                    }
+                    isDismissAll = isLastRing;
+
+                } else {
+                    finishRing(context, alarmId, isLastRing);
+                }
             }
         });
 
-        LinearLayout dismissAllLinearLayout = findViewById(R.id.ll_dismiss_all_calculator);
-
         TextView dismissAllTextView = findViewById(R.id.tv_dismiss_all);
-        dismissAllTextView.setVisibility(isLastRing ? View.GONE : View.VISIBLE);
+        dismissAllTextView.setVisibility(isLastRing ? View.INVISIBLE : View.VISIBLE);
         dismissAllTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView dismissAllExpressionTextView = findViewById(R.id.tv_dismiss_all_expression);
-                Object[] dismissAllExpression = getDismissAllExpression();
-                dismissAllExpressionTextView.setText(dismissAllExpression[0].toString());
-                dismissAllResult = Integer.valueOf(dismissAllExpression[1].toString());
+                if (isOversleepPrevent) {
+                    TextView calculateExpressionTextView = findViewById(R.id.tv_calculate_expression);
+                    Object[] dismissAllExpression = getDismissAllExpression();
+                    calculateExpressionTextView.setText(dismissAllExpression[0].toString());
+                    dismissAllResult = Integer.valueOf(dismissAllExpression[1].toString());
 
-                isShowdismissAllLinearLayout = !isShowdismissAllLinearLayout;
-                dismissAllLinearLayout.setVisibility(isShowdismissAllLinearLayout ? View.VISIBLE : View.GONE);
+                    isShowCalculateLinearLayout = !isShowCalculateLinearLayout;
+                    if (isShowCalculateLinearLayout) {
+                        calculateLinearLayout.setVisibility(View.VISIBLE);
+                        calculateNote.setVisibility(View.VISIBLE);
+                        calculateResultEditText.setText("");
+                        calculateNote.setText("请输入结果，点击确定");
+
+                    } else {
+                        calculateLinearLayout.setVisibility(View.INVISIBLE);
+                        calculateNote.setVisibility(View.INVISIBLE);
+                    }
+                    isDismissAll = true;
+
+                } else {
+                    finishRing(context, alarmId, true);
+                }
             }
         });
 
-        EditText dismissAllResultEditText = findViewById(R.id.et_dismiss_all_result);
-        TextView dismissAllTextConfirm = findViewById(R.id.tv_dismiss_all_confirm);
-        dismissAllTextConfirm.setOnClickListener(new View.OnClickListener() {
+        TextView calculateConfirmTextView = findViewById(R.id.tv_calculate_confirm);
+        calculateConfirmTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean calculatorResultCorrect = false;
+                boolean calculateResultCorrect = false;
                 try {
-                    int calculatorResult = Integer.valueOf(dismissAllResultEditText.getText().toString());
-                    if (calculatorResult != dismissAllResult) {
-                        Toast.makeText(context, "计算结果不对！", Toast.LENGTH_SHORT).show();
+                    int calculateResult = Integer.valueOf(calculateResultEditText.getText().toString());
+                    if (calculateResult != dismissAllResult) {
+                        calculateNote.setText("计算结果不对！");
                     } else {
-                        calculatorResultCorrect = true;
+                        calculateResultCorrect = true;
                     }
                 } catch (Exception e) {
-                    Toast.makeText(context, "计算结果不对！", Toast.LENGTH_SHORT).show();
+                    calculateNote.setText("计算结果不对！");
                     e.printStackTrace();
                 }
-                if (calculatorResultCorrect) {
-                    Intent serviceIntent = new Intent(context, RingtoneService.class);
-                    stopService(serviceIntent);
-                    AlarmUtils.setNextAlarm(context, alarmId, true);
-                    finish();
+                if (calculateResultCorrect) {
+                    finishRing(context, alarmId, isDismissAll);
                 }
             }
         });
 
         startAutoStopTimer();
+    }
+
+    private void finishRing(Context context, long alarmId, boolean isDismissAll) {
+        Intent serviceIntent = new Intent(context, RingtoneService.class);
+        stopService(serviceIntent);
+        AlarmUtils.setNextAlarm(context, alarmId, isDismissAll);
+
+//        Intent intent = new Intent(AlarmRingActivity.this, MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        startActivity(intent);
+
+        finishAffinity();
     }
 
     private Object[] getDismissAllExpression() {
@@ -153,9 +200,14 @@ public class AlarmRingActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                if (dismissOnceButton != null) {
-                    dismissOnceButton.callOnClick();
-                }
+                Context context = getApplicationContext();
+                Intent intent = getIntent();
+                long alarmId = intent.getLongExtra(Constant.INTENT_EXTRA_ALARM_ID, -1L);
+                boolean isLastRing = intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_LAST_RING, false);
+                Intent serviceIntent = new Intent(context, RingtoneService.class);
+                stopService(serviceIntent);
+                AlarmUtils.setNextAlarm(context, alarmId, isLastRing);
+                finish();
             }
         }.start();
     }

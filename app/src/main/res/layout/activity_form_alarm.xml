@@ -394,6 +394,40 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="49" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="防懒觉："
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/oversleepPreventSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:theme="@style/CustomSwitchStyle" />
+
+                <TextView
+                    android:id="@+id/oversleepPreventNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:paddingStart="10dp"
+                    android:text="关闭闹钟需要做算数题"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

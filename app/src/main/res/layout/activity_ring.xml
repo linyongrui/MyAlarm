@@ -26,12 +26,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="10月10日 星期四"
-        android:textColor="#CCCCCC"
+        android:textColor="@color/gray"
         android:textSize="20sp" />
 
     <!-- 闹钟标题 -->
     <TextView
-        android:id="@+id/ring_alarm_label"
+        android:id="@+id/ring_alarm_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -40,11 +40,22 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp" />
 
+    <TextView
+        android:id="@+id/ring_alarm_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ring_alarm_name"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="最后一次提醒"
+        android:textColor="@color/gray"
+        android:textSize="16sp" />
+
     <Button
         android:id="@+id/btn_dismiss_once"
         android:layout_width="200dp"
         android:layout_height="60dp"
-        android:layout_below="@id/ring_alarm_label"
+        android:layout_below="@id/ring_alarm_note"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:backgroundTint="@color/colorPrimary"
@@ -53,42 +64,55 @@
         android:textSize="20sp" />
 
     <LinearLayout
-        android:id="@+id/ll_dismiss_all_calculator"
+        android:id="@+id/ll_calculate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="95dp"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <TextView
-            android:id="@+id/tv_dismiss_all_expression"
+            android:id="@+id/tv_calculate_expression"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/et_dismiss_all_result"
+            android:id="@+id/et_calculate_result"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/tv_dismiss_all_expression"
+            android:layout_alignBaseline="@id/tv_calculate_expression"
             android:layout_marginEnd="20dp"
-            android:layout_toEndOf="@id/tv_dismiss_all_expression"
+            android:layout_toEndOf="@id/tv_calculate_expression"
             android:hint="   "
             android:inputType="number"
+            android:textColor="#FFFFFF"
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/tv_dismiss_all_confirm"
+            android:id="@+id/tv_calculate_confirm"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/et_dismiss_all_result"
+            android:layout_toEndOf="@id/et_calculate_result"
             android:text="确定"
             android:textColor="@color/colorPrimary"
             android:textSize="20sp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_calculate_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:text="请输入结果，点击确定"
+        android:textColor="@color/gray"
+        android:textSize="15sp"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/tv_dismiss_all"
@@ -96,7 +120,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="25dp"
         android:text="稍后不再提醒"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />

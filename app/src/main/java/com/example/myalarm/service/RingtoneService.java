@@ -136,6 +136,8 @@ public class RingtoneService extends Service {
         fullScreenIntent.putExtra(Constant.INTENT_EXTRA_ALARM_NAME, alarmName);
         fullScreenIntent.putExtra(Constant.INTENT_EXTRA_IS_LAST_RING, intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_LAST_RING, false));
         fullScreenIntent.putExtra(Constant.INTENT_EXTRA_RING_INTERVAL, intent.getIntExtra(Constant.INTENT_EXTRA_RING_INTERVAL, 5));
+        fullScreenIntent.putExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, false));
+        fullScreenIntent.putExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, intent.getIntExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, 0));
 
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(
                 this, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE);

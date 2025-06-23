@@ -64,6 +64,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         ringTimesList.add(new SpinnerOption("3", "3次"));
         ringTimesList.add(new SpinnerOption("5", "5次"));
         ringIntervalList.clear();
+        ringIntervalList.add(new SpinnerOption("3", "3分钟"));
         ringIntervalList.add(new SpinnerOption("5", "5分钟"));
         ringIntervalList.add(new SpinnerOption("10", "10分钟"));
         ringIntervalList.add(new SpinnerOption("15", "15分钟"));
@@ -91,6 +92,8 @@ public class AlarmFormActivity extends AppCompatActivity {
     private Spinner ringTimesSpinner;
     private Spinner ringIntervalSpinner;
     private TextView ringIntervalSpinnerTitle;
+    private Switch oversleepPreventSwitch;
+    private TextView oversleepPreventNote;
 
     private void populateUiWithAlarm(AlarmEntity originalAlarm) {
         TextView tvFormAlarmTitle = findViewById(R.id.tv_form_alarm_title);
@@ -145,6 +148,8 @@ public class AlarmFormActivity extends AppCompatActivity {
                 break;
             }
         }
+
+        oversleepPreventSwitch.setChecked(originalAlarm.isOversleepPrevent());
     }
 
     @SuppressLint({"ResourceAsColor", "MissingInflatedId"})
@@ -283,6 +288,19 @@ public class AlarmFormActivity extends AppCompatActivity {
         ringTimesSpinner = spinnerInit(context, ringTimesList, R.id.spinner_ring_times);
         ringIntervalSpinner = spinnerInit(context, ringIntervalList, R.id.spinner_ring_interval);
         ringIntervalSpinnerTitle = findViewById(R.id.spinner_ring_interval_title);
+
+        oversleepPreventSwitch = findViewById(R.id.oversleepPreventSwitch);
+        oversleepPreventSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    oversleepPreventNote.setVisibility(View.VISIBLE);
+                } else {
+                    oversleepPreventNote.setVisibility(View.GONE);
+                }
+            }
+        });
+        oversleepPreventNote = findViewById(R.id.oversleepPreventNote);
     }
 
     private void ringRuleSpinnerSelectHandle(String optionId) {
@@ -426,7 +444,8 @@ public class AlarmFormActivity extends AppCompatActivity {
         String vibrationMode = ((SpinnerOption) vibrationModeSpinner.getSelectedItem()).getOptionId();
         int ringTimes = Integer.valueOf(((SpinnerOption) ringTimesSpinner.getSelectedItem()).getOptionId());
         int ringInterval = Integer.valueOf(((SpinnerOption) ringIntervalSpinner.getSelectedItem()).getOptionId());
-        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress, isVibrator, ringTimes, ringInterval);
+
+        return new AlarmEntity(alarmName, baseAlarmType, time, ringtoneProgress, isVibrator, ringTimes, ringInterval, oversleepPreventSwitch.isChecked());
     }
 
     private Spinner spinnerInit(Context context, List<SpinnerOption> spinnerOptionList, int spinnerId) {

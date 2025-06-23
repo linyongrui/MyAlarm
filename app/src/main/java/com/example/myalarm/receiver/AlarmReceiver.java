@@ -18,6 +18,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         serviceIntent.putExtra(Constant.INTENT_EXTRA_IS_VIBRATOR, intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_VIBRATOR, true));
         serviceIntent.putExtra(Constant.INTENT_EXTRA_IS_LAST_RING, intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_LAST_RING, false));
         serviceIntent.putExtra(Constant.INTENT_EXTRA_RING_INTERVAL, intent.getIntExtra(Constant.INTENT_EXTRA_RING_INTERVAL, 5));
+        serviceIntent.putExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, false));
+        serviceIntent.putExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, intent.getIntExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, 0));
         context.startForegroundService(serviceIntent);
     }
 

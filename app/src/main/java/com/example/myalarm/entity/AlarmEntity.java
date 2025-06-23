@@ -25,8 +25,9 @@ public class AlarmEntity {
     private int requestCodeSeq;
     private long nextTriggerTime;
     private long tempDisableTriggerTime;
+    private boolean isOversleepPrevent;
 
-    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress, boolean isVibrator, int ringTimes, int ringInterval) {
+    public AlarmEntity(String name, BaseAlarmType baseAlarmType, LocalTime time, int ringtoneProgress, boolean isVibrator, int ringTimes, int ringInterval, boolean isOversleepPrevent) {
         this.name = name;
         this.baseAlarmType = baseAlarmType;
         this.time = time;
@@ -34,6 +35,7 @@ public class AlarmEntity {
         this.isVibrator = isVibrator;
         this.ringTimes = ringTimes;
         this.ringInterval = ringInterval;
+        this.isOversleepPrevent = isOversleepPrevent;
         this.alreadyRingTimes = 0;
         this.requestCodeSeq = 0;
         this.disabled = false;
@@ -153,6 +155,14 @@ public class AlarmEntity {
 
     public void setTempDisableTriggerTime(long tempDisableTriggerTime) {
         this.tempDisableTriggerTime = tempDisableTriggerTime;
+    }
+
+    public boolean isOversleepPrevent() {
+        return isOversleepPrevent;
+    }
+
+    public void setOversleepPrevent(boolean oversleepPrevent) {
+        isOversleepPrevent = oversleepPrevent;
     }
 
     public String getRepeatStr() {
