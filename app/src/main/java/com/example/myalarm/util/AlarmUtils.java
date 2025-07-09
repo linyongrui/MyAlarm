@@ -419,7 +419,8 @@ public class AlarmUtils {
                 if (alarmEntity == null) {
                     return;
                 }
-                if (!isDismissAll) {
+                boolean isLastRing = alarmEntity.getRingTimes() == 1 || alarmEntity.getRingTimes() - alarmEntity.getAlreadyRingTimes() == 1;
+                if (!isDismissAll && !isLastRing) {
                     int newRequestCode = getRequestCode(alarmId, alarmEntity.getRequestCodeSeq(), true);
                     alarmEntity.setRequestCodeSeq(alarmEntity.getRequestCodeSeq() + 1);
                     alarmEntity.setNextTriggerTime(alarmEntity.getNextTriggerTime() + alarmEntity.getRingInterval() * 60000L);

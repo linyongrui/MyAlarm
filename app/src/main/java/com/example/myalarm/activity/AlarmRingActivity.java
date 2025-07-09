@@ -205,10 +205,7 @@ public class AlarmRingActivity extends AppCompatActivity {
                 Intent intent = getIntent();
                 long alarmId = intent.getLongExtra(Constant.INTENT_EXTRA_ALARM_ID, -1L);
                 boolean isLastRing = intent.getBooleanExtra(Constant.INTENT_EXTRA_IS_LAST_RING, false);
-                Intent serviceIntent = new Intent(context, RingtoneService.class);
-                stopService(serviceIntent);
-                AlarmUtils.setNextAlarm(context, alarmId, isLastRing);
-                finishAndRemoveTask();
+                finishRing(context, alarmId, isLastRing);
             }
         }.start();
     }
