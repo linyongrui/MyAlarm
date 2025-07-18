@@ -40,6 +40,7 @@
 
         <activity
             android:name=".activity.MainActivity"
+            android:excludeFromRecents="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +52,7 @@
             android:exported="false" />
         <activity
             android:name=".activity.AlarmRingActivity"
+            android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTop"
             android:showWhenLocked="true"

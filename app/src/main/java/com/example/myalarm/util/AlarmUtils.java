@@ -5,7 +5,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.example.myalarm.Constant;
 import com.example.myalarm.alarmtype.BaseAlarmType;
@@ -279,7 +278,7 @@ public class AlarmUtils {
             throw new IllegalArgumentException("Unknown NextTriggerDate");
         }
         LocalDateTime nextTriggerTime = LocalDateTime.of(nextTriggerDate, alarmEntity.getTime());
-        Log.i("terry", "nextTriggerTime:" + nextTriggerTime);
+//        Log.i("terry", "nextTriggerTime:" + nextTriggerTime);
         return DateTimeUtils.localDateTime2long(nextTriggerTime);
     }
 
@@ -295,6 +294,7 @@ public class AlarmUtils {
         intent.putExtra(Constant.INTENT_EXTRA_ALREADY_RING_TIMES, alarm.getAlreadyRingTimes());
         intent.putExtra(Constant.INTENT_EXTRA_RING_INTERVAL, alarm.getRingInterval());
         intent.putExtra(Constant.INTENT_EXTRA_IS_OVERSLEEP_PREVENT, alarm.isOversleepPrevent());
+        intent.putExtra(Constant.INTENT_EXTRA_CURRENT_TIME_MILLIS, System.currentTimeMillis());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
                 requestCode,
@@ -319,6 +319,27 @@ public class AlarmUtils {
     public static void cancelAllAlarm(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancelAll();
+    }
+
+    public static void saveAlarm(Context context, List<AlarmEntity> newAlarmEntitys) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                for (AlarmEntity newAlarmEntity : newAlarmEntitys) {
+                    newAlarmEntity.setNextTriggerTime(getNextTriggerTime(newAlarmEntity));
+                    long id = alarmDao.insertAlarmEntity(newAlarmEntity);
+
+                    newAlarmEntity.setId(id);
+                    setAlarm(context, newAlarmEntity, (int) id * 10);
+//                    Log.i("terry", "id:" + id+",time:"+newAlarmEntity.getTime());
+                }
+            }
+        }).start();
     }
 
     public static void saveAlarm(Context context, AlarmEntity newAlarmEntity) {
@@ -391,6 +412,11 @@ public class AlarmUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                try {
+                    Thread.sleep(500L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 List<AlarmEntity> alarmEntities = alarmDao.getAlarmByIds(ids);
                 alarmDao.deleteAlarmByIds(ids);
                 for (AlarmEntity alarmEntity : alarmEntities) {

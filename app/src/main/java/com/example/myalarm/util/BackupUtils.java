@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.myalarm.alarmtype.BaseAlarmType;
@@ -39,7 +38,7 @@ public class BackupUtils {
                         .create();
                 String json = gson.toJson(alarms);
 
-                Log.i("terry", "exportToJson:" + json);
+//                Log.i("terry", "exportToJson:" + json);
 
                 OutputStream os = context.getContentResolver().openOutputStream(targetUri);
                 os.write(json.getBytes(StandardCharsets.UTF_8));
@@ -55,14 +54,10 @@ public class BackupUtils {
 
     public static void importFromJson(Context context, Uri sourceUri) {
         new Thread(() -> {
-            try {
-                InputStream is = context.getContentResolver().openInputStream(sourceUri);
-                String json = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
-                        .lines()
-                        .collect(Collectors.joining("\n"));
-                is.close();
+            try (InputStream is = context.getContentResolver().openInputStream(sourceUri);
+                 BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
-                Log.i("terry", "importFromJson:" + json);
+                String json = br.lines().collect(Collectors.joining("\n"));
 
                 Gson gson = new GsonBuilder()
                         .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
@@ -78,10 +73,10 @@ public class BackupUtils {
                     alarmEntity.setRequestCodeSeq(0);
                     alarmEntity.setAlreadyRingTimes(0);
                     alarmEntity.setNextTriggerTime(0);
-                    AlarmUtils.saveAlarm(context, alarmEntity);
                 }
+                AlarmUtils.saveAlarm(context, alarms);
 
-                showToast(context, "导入成功");
+                showToast(context, "导入成功"+alarms.size()+"个闹钟");
             } catch (Exception e) {
                 e.printStackTrace();
                 showToast(context, "导入失败");

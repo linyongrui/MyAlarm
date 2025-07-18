@@ -193,7 +193,7 @@ public class AlarmRingActivity extends AppCompatActivity {
     }
 
     private void startAutoStopTimer() {
-        countDownTimer = new CountDownTimer(2 * 60 * 1000, 1000) {
+        countDownTimer = new CountDownTimer(50 * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 // 可在此处更新UI显示倒计时，暂未实现

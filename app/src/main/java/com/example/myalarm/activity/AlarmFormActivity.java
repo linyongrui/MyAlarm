@@ -64,6 +64,7 @@ public class AlarmFormActivity extends AppCompatActivity {
         ringTimesList.add(new SpinnerOption("3", "3次"));
         ringTimesList.add(new SpinnerOption("5", "5次"));
         ringIntervalList.clear();
+        ringIntervalList.add(new SpinnerOption("1", "1分钟"));
         ringIntervalList.add(new SpinnerOption("3", "3分钟"));
         ringIntervalList.add(new SpinnerOption("5", "5分钟"));
         ringIntervalList.add(new SpinnerOption("10", "10分钟"));
